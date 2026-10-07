@@ -62,8 +62,8 @@ export function MonthView({
               <button
                 onClick={() => onSelectDay(date)}
                 className={cn(
-                  "flex size-6 items-center justify-center self-end rounded-full text-xs transition-colors hover:bg-surface-elevated",
-                  !inMonth && "text-muted-foreground/50",
+                  "flex size-6 items-center justify-center self-end rounded-full text-xs transition-colors hover:bg-hover",
+                  !inMonth && "text-muted-foreground",
                   inMonth && "text-foreground",
                   isToday(date) && "bg-primary text-primary-foreground hover:bg-primary-hover"
                 )}
@@ -77,7 +77,7 @@ export function MonthView({
                 {overflow > 0 && (
                   <button
                     onClick={() => onSelectDay(date)}
-                    className="text-left text-[11px] text-muted-foreground hover:text-primary"
+                    className="text-left text-[11px] text-muted-foreground hover:text-primary-text"
                   >
                     +{overflow} mais
                   </button>

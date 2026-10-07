@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Logo } from "@/components/ui/Logo";
 
 export function MarketingHeader() {
@@ -12,6 +13,7 @@ export function MarketingHeader() {
         <span className="text-sm font-semibold text-foreground">Content OS</span>
       </div>
       <div className="flex items-center gap-2">
+        <ThemeToggle />
         <Button asChild variant="ghost" size="sm">
           <Link href="/login">Entrar</Link>
         </Button>

@@ -42,7 +42,7 @@ export function ContentCard({ content }: ContentCardProps) {
           <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
             {FORMAT_LABELS[content.format]}
           </span>
-          <h3 className="line-clamp-2 text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+          <h3 className="line-clamp-2 text-sm font-semibold text-foreground group-hover:text-primary-text transition-colors">
             {content.title}
           </h3>
           {client && (

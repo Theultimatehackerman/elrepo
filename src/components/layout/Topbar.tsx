@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Plus, Mic, LogOut } from "lucide-react";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import {
@@ -61,13 +62,14 @@ export function Topbar() {
         </Link>
       </Button>
 
+      <ThemeToggle />
+
       <Dropdown>
         <DropdownTrigger asChild>
           <button className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-primary/50">
             <Avatar
               initials={getInitials(settings.profileName)}
               size="sm"
-              color="#5B4BFF"
             />
           </button>
         </DropdownTrigger>

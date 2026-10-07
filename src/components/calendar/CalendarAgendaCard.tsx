@@ -46,7 +46,7 @@ export function CalendarAgendaCard({ content }: { content: Content }) {
         <Link
           href={`/content/${content.id}`}
           onClick={(e) => e.stopPropagation()}
-          className="block truncate text-sm font-medium text-foreground hover:text-primary"
+          className="block truncate text-sm font-medium text-foreground hover:text-primary-text"
         >
           {content.title}
         </Link>

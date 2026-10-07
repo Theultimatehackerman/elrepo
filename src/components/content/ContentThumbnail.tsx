@@ -54,10 +54,10 @@ export function ContentThumbnail({
           className="absolute inset-0 size-full object-cover"
         />
       ) : (
-        <FormatIcon className="size-10 text-white/25" strokeWidth={1.5} />
+        <FormatIcon className="size-10 text-on-media/25" strokeWidth={1.5} />
       )}
-      <div className="absolute right-2 top-2 flex size-6 items-center justify-center rounded-full bg-black/30 backdrop-blur-sm">
-        <PlatformIcon className="size-3.5 text-white" />
+      <div className="absolute right-2 top-2 flex size-6 items-center justify-center rounded-full bg-scrim backdrop-blur-sm">
+        <PlatformIcon className="size-3.5 text-on-media" />
       </div>
     </div>
   );

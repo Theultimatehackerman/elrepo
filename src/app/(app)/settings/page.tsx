@@ -15,12 +15,15 @@ import {
   SelectValue,
 } from "@/components/ui/Select";
 import { useSettingsStore } from "@/store/settings-store";
+import { useTheme } from "@/hooks/use-theme";
+import { isThemePreference } from "@/lib/theme/resolve";
 import { useToast } from "@/components/ui/Toast";
 import { getInitials } from "@/lib/utils/text";
 
 export default function SettingsPage() {
   const settings = useSettingsStore((s) => s.settings);
   const updateSettings = useSettingsStore((s) => s.updateSettings);
+  const { theme, setTheme } = useTheme();
   const { toast } = useToast();
 
   const [workspaceName, setWorkspaceName] = React.useState(settings.workspaceName);
@@ -110,16 +113,21 @@ export default function SettingsPage() {
             <CardContent className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Tema</label>
-                <Select value="dark" disabled>
-                  <SelectTrigger>
+                <Select
+                  value={theme}
+                  onValueChange={(v) => isThemePreference(v) && setTheme(v)}
+                >
+                  <SelectTrigger aria-label="Tema">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="dark">Escuro</SelectItem>
+                    <SelectItem value="light">Claro</SelectItem>
+                    <SelectItem value="system">Sistema (segue o dispositivo)</SelectItem>
                   </SelectContent>
                 </Select>
                 <span className="text-xs text-muted-foreground">
-                  O modo claro chega em uma próxima versão.
+                  A escolha vale só para este dispositivo.
                 </span>
               </div>
 

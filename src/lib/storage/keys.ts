@@ -7,4 +7,5 @@ export const STORAGE_KEYS = {
   settings: "content-os-settings",
   auth: "content-os-auth",
   users: "content-os-users",
+  theme: "content-os-theme",
 } as const;

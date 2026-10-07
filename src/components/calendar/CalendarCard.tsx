@@ -58,7 +58,7 @@ export function CalendarCard({ content, compact }: { content: Content; compact?:
         <Link
           href={`/content/${content.id}`}
           onClick={(e) => e.stopPropagation()}
-          className="line-clamp-2 text-xs font-medium text-foreground hover:text-primary"
+          className="line-clamp-2 text-xs font-medium text-foreground hover:text-primary-text"
         >
           {content.title}
         </Link>

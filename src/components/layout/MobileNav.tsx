@@ -63,14 +63,14 @@ export function MobileNav() {
     <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
       <DialogPrimitive.Trigger asChild>
         <button
-          className="flex size-9 items-center justify-center rounded-sm text-foreground hover:bg-surface-elevated md:hidden"
+          className="flex size-9 items-center justify-center rounded-sm text-foreground hover:bg-hover md:hidden"
           aria-label="Abrir menu"
         >
           <Menu className="size-5" />
         </button>
       </DialogPrimitive.Trigger>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="radix-fade fixed inset-0 z-50 bg-black/70 md:hidden" />
+        <DialogPrimitive.Overlay className="radix-fade fixed inset-0 z-50 bg-overlay md:hidden" />
         <DialogPrimitive.Content className="radix-slide-left fixed inset-y-0 left-0 z-50 flex w-64 flex-col justify-between border-r border-border bg-surface p-3 outline-none md:hidden">
           <div>
             <div className="flex h-11 items-center justify-between px-2">
@@ -80,7 +80,7 @@ export function MobileNav() {
                   Content OS
                 </DialogPrimitive.Title>
               </div>
-              <DialogPrimitive.Close className="flex size-7 items-center justify-center rounded-xs text-muted-foreground hover:bg-surface-elevated hover:text-foreground">
+              <DialogPrimitive.Close className="flex size-7 items-center justify-center rounded-xs text-muted-foreground hover:bg-hover hover:text-foreground">
                 <X className="size-4" />
               </DialogPrimitive.Close>
             </div>
@@ -94,8 +94,8 @@ export function MobileNav() {
                     className={cn(
                       "flex items-center gap-3 rounded-sm px-3 py-2 text-sm font-medium transition-colors",
                       active
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:bg-surface-elevated hover:text-foreground"
+                        ? "bg-primary/10 text-primary-text"
+                        : "text-muted-foreground hover:bg-hover hover:text-foreground"
                     )}
                   >
                     <item.icon className="size-4" />
@@ -111,7 +111,6 @@ export function MobileNav() {
               <Avatar
                 initials={getInitials(settings.profileName)}
                 size="sm"
-                color="#5B4BFF"
               />
               <div className="flex flex-col truncate">
                 <span className="text-xs font-medium text-foreground truncate">

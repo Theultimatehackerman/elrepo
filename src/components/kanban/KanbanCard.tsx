@@ -34,7 +34,7 @@ export function KanbanCard({ content, dragging }: { content: Content; dragging?:
       <button
         {...listeners}
         {...attributes}
-        className="absolute right-1.5 top-1.5 flex size-5 cursor-grab items-center justify-center rounded text-muted-foreground opacity-0 transition-opacity hover:bg-surface-elevated group-hover:opacity-100 active:cursor-grabbing"
+        className="absolute right-1.5 top-1.5 flex size-5 cursor-grab items-center justify-center rounded text-muted-foreground opacity-0 transition-opacity hover:bg-hover group-hover:opacity-100 active:cursor-grabbing"
         aria-label="Arrastar"
       >
         <GripVertical className="size-3.5" />

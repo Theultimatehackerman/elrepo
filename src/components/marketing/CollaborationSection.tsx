@@ -38,7 +38,7 @@ export function CollaborationSection() {
               className="flex flex-col items-center gap-1"
             >
               <div className="flex items-center gap-3 rounded-full border border-border bg-surface px-5 py-2.5">
-                <step.icon className="size-4 text-primary" />
+                <step.icon className="size-4 text-primary-text" />
                 <span className="text-sm font-medium text-foreground">{step.label}</span>
               </div>
               {i < STEPS.length - 1 && <ArrowDown className="size-4 text-muted-foreground/40" />}

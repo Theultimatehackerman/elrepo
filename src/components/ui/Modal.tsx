@@ -16,7 +16,7 @@ export function ModalContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content> & { showClose?: boolean }) {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="radix-fade fixed inset-0 z-50 bg-black/70 backdrop-blur-[2px]" />
+      <DialogPrimitive.Overlay className="radix-fade fixed inset-0 z-50 bg-overlay backdrop-blur-[2px]" />
       <DialogPrimitive.Content
         className={cn(
           "radix-pop fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-surface p-6 shadow-(--shadow-elevated) focus:outline-none",
@@ -26,7 +26,7 @@ export function ModalContent({
       >
         {children}
         {showClose && (
-          <DialogPrimitive.Close className="absolute right-4 top-4 rounded-xs p-1 text-muted-foreground transition-colors hover:bg-surface-elevated hover:text-foreground focus:outline-none">
+          <DialogPrimitive.Close className="absolute right-4 top-4 rounded-xs p-1 text-muted-foreground transition-colors hover:bg-hover hover:text-foreground focus:outline-none">
             <X className="size-4" />
             <span className="sr-only">Fechar</span>
           </DialogPrimitive.Close>

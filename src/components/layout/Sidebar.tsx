@@ -57,8 +57,8 @@ export function Sidebar() {
                 className={cn(
                   "flex items-center gap-3 rounded-sm px-3 py-2 text-sm font-medium transition-colors",
                   active
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-surface-elevated hover:text-foreground",
+                    ? "bg-primary/10 text-primary-text"
+                    : "text-muted-foreground hover:bg-hover hover:text-foreground",
                   collapsed && "justify-center px-0"
                 )}
               >
@@ -82,7 +82,7 @@ export function Sidebar() {
           <button
             onClick={() => setCollapsed(!collapsed)}
             className={cn(
-              "flex w-full items-center gap-3 rounded-sm px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-surface-elevated hover:text-foreground",
+              "flex w-full items-center gap-3 rounded-sm px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-hover hover:text-foreground",
               collapsed && "justify-center px-0"
             )}
           >

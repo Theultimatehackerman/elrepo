@@ -1,5 +1,6 @@
 "use client";
 
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -91,6 +92,10 @@ export default function RegisterPage() {
     <div className="flex min-h-svh flex-col items-center justify-center px-4 py-12 relative overflow-hidden bg-background">
       {/* Background glow decoration */}
       <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 size-96 rounded-full bg-primary/15 blur-[120px]" />
+
+      <div className="absolute right-4 top-4 z-10">
+        <ThemeToggle />
+      </div>
 
       <div className="w-full max-w-md">
         <div className="mb-6 flex items-center justify-between">
@@ -212,7 +217,7 @@ export default function RegisterPage() {
                   Já possui uma conta?{" "}
                   <Link
                     href="/login"
-                    className="font-medium text-primary hover:underline hover:text-primary-hover"
+                    className="font-medium text-primary-text hover:underline"
                   >
                     Fazer login
                   </Link>

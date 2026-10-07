@@ -36,7 +36,7 @@ export function SolutionSection() {
           {FEATURES.map((feature, i) => (
             <Reveal key={feature.title} delay={i * 0.1}>
               <Card className="flex h-full flex-col gap-3 p-6">
-                <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary-text">
                   <feature.icon className="size-5" />
                 </div>
                 <h3 className="text-sm font-semibold text-foreground">{feature.title}</h3>

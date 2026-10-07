@@ -30,7 +30,7 @@ export function ContentListRow({ content }: { content: Content }) {
         </Link>
       </TableCell>
       <TableCell>
-        <Link href={`/content/${content.id}`} className="font-medium hover:text-primary">
+        <Link href={`/content/${content.id}`} className="font-medium hover:text-primary-text">
           {content.title}
         </Link>
         <div className="mt-0.5 text-xs text-muted-foreground">{FORMAT_LABELS[content.format]}</div>

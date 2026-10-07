@@ -32,7 +32,7 @@ const VARIANT_COLOR: Record<ToastVariant, string> = {
   success: "text-success",
   error: "text-danger",
   danger: "text-danger",
-  info: "text-primary",
+  info: "text-primary-text",
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
@@ -57,7 +57,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             <ToastPrimitive.Root
               key={item.id}
               onOpenChange={(open) => !open && remove(item.id)}
-              className="radix-pop flex items-start gap-3 rounded-md border border-border bg-surface-elevated p-4 shadow-(--shadow-elevated) data-[swipe=end]:animate-out"
+              className="radix-pop flex items-start gap-3 rounded-md border border-border bg-popover p-4 shadow-(--shadow-elevated) data-[swipe=end]:animate-out"
             >
               <Icon className={cn("size-5 shrink-0", VARIANT_COLOR[item.variant])} />
               <div className="flex flex-col gap-0.5">

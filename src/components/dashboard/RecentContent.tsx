@@ -45,7 +45,7 @@ export function RecentContent() {
             <Link
               key={content.id}
               href={`/content/${content.id}`}
-              className="flex items-center gap-3 rounded-sm p-2 transition-colors hover:bg-surface-elevated"
+              className="flex items-center gap-3 rounded-sm p-2 transition-colors hover:bg-hover"
             >
               <div className="size-11 shrink-0">
                 <ContentThumbnail

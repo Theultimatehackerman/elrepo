@@ -12,13 +12,12 @@ import {
 } from "@/components/ui/Select";
 import { DropdownCheckboxItem, Dropdown, DropdownContent, DropdownTrigger } from "@/components/ui/Dropdown";
 import { mockUsers } from "@/data/mock-users";
+import { AVATAR_COLORS } from "@/lib/constants/avatar-colors";
 import { PLATFORM_CONFIG } from "@/lib/constants/platforms";
 import { PLATFORMS } from "@/types";
 import { getInitials } from "@/lib/utils/text";
 import type { ClientInput } from "@/store/client-store";
 import type { Client } from "@/types";
-
-const AVATAR_COLORS = ["#5B4BFF", "#EC4899", "#F59E0B", "#22C55E", "#0EA5E9", "#8B5CF6"];
 
 export function ClientForm({
   initial,

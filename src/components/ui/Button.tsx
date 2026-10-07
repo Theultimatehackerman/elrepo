@@ -12,11 +12,11 @@ export const buttonVariants = cva(
         primary:
           "bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover active:bg-primary",
         secondary:
-          "bg-surface-elevated text-foreground border border-border hover:bg-surface-elevated/70",
-        ghost: "text-foreground hover:bg-surface-elevated",
-        outline: "border border-border text-foreground hover:bg-surface-elevated",
-        destructive: "bg-danger text-white hover:bg-danger/90",
-        link: "text-primary underline-offset-4 hover:underline p-0 h-auto",
+          "bg-surface-elevated text-foreground border border-border hover:bg-hover",
+        ghost: "text-foreground hover:bg-hover",
+        outline: "border border-border text-foreground hover:bg-hover",
+        destructive: "bg-danger-solid text-danger-foreground hover:bg-danger-solid/90",
+        link: "text-primary-text underline-offset-4 hover:underline p-0 h-auto",
       },
       size: {
         sm: "h-8 px-3 text-xs",

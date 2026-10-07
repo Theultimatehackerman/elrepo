@@ -135,3 +135,9 @@ Sem o prefixo `NEXT_PUBLIC_` — essa chave é usada **apenas no servidor**, den
 A extração usa JSON Schema via GROQ (`openai/gpt-oss-120b`) com validação Zod no servidor, então o retorno já vem no formato certo — sem parsing manual de texto livre.
 
 Feito por [Lázaro Vasconcelos](mailto:lazaro.vasconcelos@sollydus.com.br).
+## Temas (Escuro · Claro · Sistema)
+
+- Alternar: ícone no topo do app/landing/login, ou Settings → Preferências. Padrão: escuro.
+- Tokens: `src/app/globals.css` (`@theme static` + `[data-theme="light"]`). Não use `dark:`, `white`/`black` ou hex em componentes (o lint bloqueia).
+- Motor: `src/lib/theme/*`, `src/hooks/use-theme.ts`. Decisões: `docs/adr/0001-theme-system.md`.
+- Qualidade: `npm run lint · typecheck · test · contrast · e2e` (1ª vez do e2e: `npx playwright install chromium`).

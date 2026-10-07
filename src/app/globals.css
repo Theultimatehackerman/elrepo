@@ -1,55 +1,110 @@
 @import "tailwindcss";
 
-@theme {
-  /* Colors — Content OS design tokens (dark-first) */
+/* Variantes para os raros casos em que classe utilitária precisa diferir por tema. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
+
+/*
+ * `static` é OBRIGATÓRIO: sem ele o Tailwind v4 só emite no :root os tokens que algum utilitário
+ * usa, e tokens referenciados apenas via var() em TS/inline (ex.: status) ou ainda sem uso
+ * deixariam de existir — quebrando o override por tema.
+ * Valores deste bloco = tema ESCURO (padrão, e fallback sem JavaScript).
+ */
+@theme static {
+  /* Superfícies */
   --color-background: #050505;
   --color-surface: #0d0d0f;
   --color-surface-elevated: #151518;
+  --color-popover: #151518;
+  --color-hover: #1c1c21;
   --color-border: #25252a;
+  --color-overlay: rgb(0 0 0 / 0.7);
 
+  /* Texto */
   --color-foreground: #ffffff;
   --color-muted-foreground: #9ca3af;
+  --color-on-media: #ffffff;
+  --color-scrim: rgb(0 0 0 / 0.3);
 
+  /* Marca */
   --color-primary: #5b4bff;
-  --color-primary-hover: #6e60ff;
+  --color-primary-hover: #6558ff;
   --color-primary-foreground: #ffffff;
+  --color-primary-text: #9b91ff;
 
+  /* Semânticas */
   --color-success: #22c55e;
   --color-warning: #f59e0b;
   --color-danger: #ef4444;
+  --color-danger-solid: #dc2626;
+  --color-danger-foreground: #ffffff;
 
-  /* Status colors — one per content workflow stage */
+  /* Status do fluxo editorial */
   --color-status-idea: #9ca3af;
   --color-status-script: #60a5fa;
   --color-status-production: #a78bfa;
   --color-status-editing: #f59e0b;
   --color-status-approval: #fb923c;
-  --color-status-scheduled: #5b4bff;
+  --color-status-scheduled: #9b91ff;
   --color-status-published: #22c55e;
 
-  /* Radius */
+  /* Raios, fontes, sombras, movimento (iguais nos dois temas, exceto sombras) */
   --radius-xs: 6px;
   --radius-sm: 8px;
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-xl: 20px;
-
-  /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-
-  /* Shadows */
   --shadow-elevated: 0 8px 30px -8px rgb(0 0 0 / 0.5);
   --shadow-popover: 0 4px 24px -4px rgb(0 0 0 / 0.6);
-
-  /* Motion */
   --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-html {
-  color-scheme: dark;
+/* Tema CLARO — sobrescreve apenas o que muda. Seletor por atributo (não :root) para permitir
+   re-tematizar uma subárvore, ex.: <div data-theme="light"> em exportações. */
+[data-theme="light"] {
+  --color-background: #f7f7fa;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #eeeef4;
+  --color-popover: #ffffff;
+  --color-hover: #e9e9f0;
+  --color-border: #e1e1ea;
+  --color-overlay: rgb(15 15 25 / 0.5);
+
+  --color-foreground: #0b0b0f;
+  --color-muted-foreground: #5b6270;
+
+  --color-primary: #4b3df0;
+  --color-primary-hover: #3d2fd9;
+  --color-primary-text: #4b3df0;
+
+  --color-success: #14703a;
+  --color-warning: #92400e;
+  --color-danger: #c81e1e;
+  --color-danger-solid: #c81e1e;
+
+  --color-status-idea: #4b5563;
+  --color-status-script: #1d4ed8;
+  --color-status-production: #6d28d9;
+  --color-status-editing: #854d0e;
+  --color-status-approval: #9a3412;
+  --color-status-scheduled: #4b3df0;
+  --color-status-published: #166534;
+
+  --shadow-elevated: 0 8px 30px -8px rgb(15 15 25 / 0.18);
+  --shadow-popover: 0 4px 24px -4px rgb(15 15 25 / 0.2);
 }
 
+:root {
+  color-scheme: dark;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+[data-theme="light"] {
+  color-scheme: light;
+}
 body {
   background: var(--color-background);
   color: var(--color-foreground);

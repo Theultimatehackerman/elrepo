@@ -50,7 +50,7 @@ export function CalendarExportSheet({ month, items }: CalendarExportSheetProps) 
           <span className="text-sm text-muted-foreground">{formatMonthYear(month)}</span>
         </div>
         <div className="flex flex-col items-end gap-0.5">
-          <span className="text-3xl font-semibold text-primary">{inMonthCount}</span>
+          <span className="text-3xl font-semibold text-primary-text">{inMonthCount}</span>
           <span className="text-xs text-muted-foreground">
             {inMonthCount === 1 ? "conteúdo no mês" : "conteúdos no mês"}
           </span>
@@ -87,7 +87,7 @@ export function CalendarExportSheet({ month, items }: CalendarExportSheetProps) 
                 <div
                   className={cn(
                     "flex size-6 items-center justify-center self-end rounded-full text-xs",
-                    !inMonth && "text-muted-foreground/50",
+                    !inMonth && "text-muted-foreground",
                     inMonth && "text-foreground",
                     isToday(date) && "bg-primary text-primary-foreground"
                   )}
