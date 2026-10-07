@@ -36,8 +36,8 @@ Legenda: **P0** bloqueia merge · **P1** necessário para considerar “concluí
 |---|---|---|---|---|
 | L1 | P0 | `next build` verde | N0 | `npm run build` sai com 0; sem warning de hidratação no console |
 | L2 | P0 | CI executa e passa | N0 | jobs `quality` e `e2e` verdes num PR |
-| L3 | P0 | Fixar Playwright (`@playwright/test` exato = `playwright-core`) | N0 | `npm ls playwright-core` mostra 1 versão |
-| L4 | P0 | `.nvmrc` + `engines` (Node ≥ 22.12) | N0 | arquivo presente; deploy usa Node ≥ 22.12 |
+| L3 | P0 | ✅ Fixar Playwright (`@playwright/test` exato = `playwright-core`) | N0 | `npm ls playwright-core` mostra 1 versão |
+| L4 | P0 | ✅ `.nvmrc` + `engines` (Node ≥ 22.12) | N0 | arquivo presente; deploy usa Node ≥ 22.12 |
 | L5 | P1 | QA manual em Safari/iOS e Firefox | N0/N4 | checklist da seção 4-N4 sem falhas |
 | L6 | P1 | Cobrir rotas dinâmicas e públicas nos 2 temas | N1 | e2e/axe incluem `/content/[id]`, `/clients/[id]`, `/campaigns/[id]`, `/review/…`, 404 |
 | L7 | P1 | Cobrir estados abertos: Modal, Select, Dropdown, Tooltip, Toast, drag overlay (Kanban/Calendar) | N1 | axe roda com cada overlay aberto, 2 temas |
@@ -169,7 +169,7 @@ Checklist manual (anotar ✅/❌ + navegador/versão no log):
 | Data | Sessão | Resultado | Evidência | Achados / próximos |
 |---|---|---|---|---|
 | 07/10/2026 | S0–S9 (plano original) | ✅ implementação completa | lint 0 · tsc 0 · 22 unit · contraste AA · 23 e2e · diff do escuro 0,01–1,16%/rota | build e CI não verificados; ver HANDOFF §3–§4 |
-| — | N0 | ⬜ | | |
+| 07/10/2026 | N0 (parcial) | ⚠️ L3, L4 ✅; L1, L2, L5 **não verificados** (sandbox) | Passo 0: lint 0 · tsc 0 · 22 unit · contraste AA · 23 e2e (= baseline). `npm ls playwright-core` → 1 versão (1.56.1). `.nvmrc`=22, `engines.node`=">=22.12". `npm run build` falha **só** por Google Fonts inacessível (Geist/Geist Mono) | **Rodar no ambiente real:** `npm run build`, PR com CI (`quality`,`e2e`), abrir com Geist real nos 2 temas. Só então marcar N0 ✅. Achado: `npm run build` aqui nunca passa sem rede p/ fonts; considerar `next/font/local` (fora do escopo) |
 | — | N1 | ⬜ | | |
 | — | N2 | ⬜ | | |
 | — | N3 | ⬜ | | |

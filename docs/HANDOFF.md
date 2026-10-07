@@ -12,8 +12,8 @@
 |---|---|
 | **Objetivo** | Transformar o escuro (antes um valor fixo) em tema de primeira classe: **Escuro · Claro · Sistema**, troca em tempo real, persistência, zero flash, WCAG AA. |
 | **Estado** | **Implementação completa e verificada no sandbox.** Falta *validação no seu ambiente* (build, CI real, Safari/iOS) e *ampliar a cobertura de testes*. |
-| **Pronto para merge?** | **Ainda não.** Bloqueadores: B1–B4 (seção 4). Nenhum é uma falha conhecida do código — são verificações que o sandbox não pôde fazer. |
-| **Base** | `Content-OS-main` (snapshot de 22/09/2026). Commit base: `ebf4d7f`. |
+| **Pronto para merge?** | **Ainda não.** Bloqueadores abertos: B1, B2 (seção 4); B3 e B4 resolvidos em N0 (07/10/2026). Nenhum é uma falha conhecida do código — são verificações que o sandbox não pôde fazer. |
+| **Base** | `Content-OS-main` (snapshot de 22/09/2026). Commit base original: `ebf4d7f` (histórico git não veio no último upload; reconstruído aplicando o patch ao original). |
 | **Entregue** | 59 arquivos alterados (+1286 / −88, sem o lockfile; inclui docs e testes), 5 commits sobre a base, `theme-system.patch` (aplica limpo no original, verificado). |
 | **Verificação** | `eslint` 0 problemas · `tsc` 0 erros · **22** testes Vitest · contraste AA nos 2 temas · **23** testes Playwright/axe (5 de tema + 18 de contraste: 9 rotas × 2 temas). |
 
@@ -72,8 +72,8 @@
 |---|---|---|---|
 | **B1** | `next build` nunca rodou | `npm ci && npm run build` na sua máquina | build verde, sem erro de tipo/hidratação |
 | **B2** | CI nunca executou | abrir PR com o patch; observar `quality` e `e2e` | 2 jobs verdes |
-| **B3** | Versões do Playwright: `@playwright/test` está `^1.56.1`, mas `overrides` fixa `playwright-core@1.56.1` | trocar para `"@playwright/test": "1.56.1"` (exato) **ou** subir os dois juntos; rodar `npm ci` | `npm ls playwright-core` com uma única versão |
-| **B4** | Node mínimo | vitest 5 exige Node ≥ 22.12. Criar `.nvmrc` (`22`) e `"engines": {"node": ">=22.12"}` | `node -v` ≥ 22.12 no deploy |
+| **B3 ✅** | Versões do Playwright: `@playwright/test` está `^1.56.1`, mas `overrides` fixa `playwright-core@1.56.1` | trocar para `"@playwright/test": "1.56.1"` (exato) **ou** subir os dois juntos; rodar `npm ci` | `npm ls playwright-core` com uma única versão |
+| **B4 ✅** | Node mínimo | vitest 5 exige Node ≥ 22.12. Criar `.nvmrc` (`22`) e `"engines": {"node": ">=22.12"}` | `node -v` ≥ 22.12 no deploy |
 
 ---
 
