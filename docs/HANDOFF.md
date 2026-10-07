@@ -10,12 +10,14 @@
 
 | | |
 |---|---|
-| **Objetivo** | Transformar o escuro (antes um valor fixo) em tema de primeira classe: **Escuro · Claro · Sistema**, troca em tempo real, persistência, zero flash, WCAG AA. |
-| **Estado** | **Implementação completa e verificada no sandbox.** Falta *validação no seu ambiente* (build, CI real, Safari/iOS) e *ampliar a cobertura de testes*. |
-| **Pronto para merge?** | **Ainda não.** Bloqueadores abertos: B1, B2 (seção 4); B3 e B4 resolvidos em N0 (07/10/2026). Nenhum é uma falha conhecida do código — são verificações que o sandbox não pôde fazer. |
-| **Base** | `Content-OS-main` (snapshot de 22/09/2026). Commit base original: `ebf4d7f` (histórico git não veio no último upload; reconstruído aplicando o patch ao original). |
-| **Entregue** | 59 arquivos alterados (+1286 / −88, sem o lockfile; inclui docs e testes), 5 commits sobre a base, `theme-system.patch` (aplica limpo no original, verificado). |
-| **Verificação** | `eslint` 0 problemas · `tsc` 0 erros · **22** testes Vitest · contraste AA nos 2 temas · **23** testes Playwright/axe (5 de tema + 18 de contraste: 9 rotas × 2 temas). |
+| **Objetivo** | Escuro (antes fixo) como tema de primeira classe: **Escuro · Claro · Sistema**, troca em tempo real, persistência, zero flash, WCAG AA. |
+| **Estado** | Implementação completa (S0–S9) + **N0 parcial** (pins) + **N1 parcial** (cobertura de rotas dinâmicas, axe completo, overlays). Falta: validação no ambiente real e o restante de N1/N3/N5. |
+| **Pronto para merge?** | **Ainda não.** Abertos: **B1** `next build` e **B2** CI (nunca executados; só rodam na sua máquina). B3/B4 resolvidos. |
+| **Baseline (portões)** | lint **0** · tsc **0** · **22** unit · contraste AA (2 temas) · e2e **75** passando (5 tema + 28 contraste + 30 axe completo + 12 overlays) (ver ACTION-PLAN §2) · build `não verificado` |
+| **Histórico git** | 4 commits: `base` (original) → `feat(theme)…` → `chore(theme): pin…` → `test(theme): …N1 partial`. (O hash original `ebf4d7f` não existe aqui; a base foi reconstruída do zip original e o diff é equivalente.) |
+| **Próximo passo** | Ver **ACTION-PLAN §1 (painel)**. |
+
+> **Nota de processo (lição desta sessão):** o upload anterior veio com o zip *errado* (o original, sem docs/patch/histórico) e a sessão perdeu tempo. Agora tudo vive em **um único** `CONTENT-OS-SESSION-PACK.zip` com `verify-pack.sh`; o Passo 0 do prompt **para** se a verificação falhar.
 
 ---
 
@@ -50,19 +52,31 @@
 
 ---
 
-## 3. O que NÃO foi feito (resumo)
+### Sessão de continuação (N0 parcial + N1 parcial) — 07/10/2026
 
-| Item | Por quê | Onde está planejado |
+| Entrega | Evidência |
+|---|---|
+| Playwright fixado (`@playwright/test` = `playwright-core` = 1.56.1) | `npm ls playwright-core` → 1 versão |
+| `.nvmrc` (22) + `engines.node >=22.12` | arquivos no repo; lockfile atualizado |
+| `e2e/helpers.ts` (`loginDemo`, `waitHydrated`, rotas) | usado por todos os specs novos |
+| a11y contraste: + 5 rotas (`/content/content_1`, `/clients/client_acme`, `/campaigns/campaign_black_friday`, `/review/content_1`, 404) × 2 temas | passou |
+| `e2e/a11y-full.spec.ts`: axe `wcag2a/2aa/21a/21aa`, 15 rotas × 2 temas | 8 defeitos pré-existentes achados → allow-list `KNOWN` por rota+regra, com motivo |
+| `e2e/overlays.spec.ts`: Modal, Dropdown, Select, Tooltip, Toast, drag Kanban × 2 temas | 12/12 passando (isolado) |
+| `playwright.config.ts`: `timeout 60s`, `expect.timeout 20s` | só mitiga compilação sob demanda do `next dev` |
+
+## 3. O que NÃO foi feito (resumo — detalhe e IDs em ACTION-PLAN §3)
+
+| Item | Por quê | Onde |
 |---|---|---|
-| `next build` | Google Fonts retorna 403 no sandbox | ACTION-PLAN **N0** |
-| Rodar o CI de verdade | workflow escrito, nunca executado | **N0** |
-| Safari/iOS/Firefox, fonte Geist real | sandbox só tem Chromium e fontes de fallback | **N0**, **N4** |
-| Gate visual (D9) | faltou tempo; baselines devem ser geradas com a fonte real | **N2** |
-| Rotas dinâmicas e `/review` nos 2 temas, mobile, estados abertos (modal/dropdown/toast/drag) | só 9 rotas estáticas foram cobertas | **N1** |
-| PDF no claro | só o PNG foi gerado | **N1** |
-| Regra de lint para `rgb()/hsl()/oklch()`, hex de 3/8 dígitos, `bg-[#…]` | regra atual só pega `white/black` e hex de 6 dígitos (nenhuma ocorrência hoje) | **N3** |
-| Página-vitrine `/dev/theme` | prevista no plano (§4.4), não criada | **N3** |
-| Documento do plano original (`Plano de Ação…md/pdf`) | parou no §5; §6+ nunca escrito. **Substituído por `ACTION-PLAN.md`** | — |
+| `next build` (L1), CI real (L2), Safari/iOS/Firefox (L5), fonte Geist real | sandbox sem Google Fonts/CI/outros navegadores | você: N0/N4 |
+| Gate visual (L10) | baselines exigem a fonte real, geradas no CI Linux | N2 (exige N0) |
+| Viewport mobile + `MobileNav` (L8) | não feito | N1 |
+| PDF/PNG de exportação no claro (L9) | PNG ok na S9; PDF nunca testado | N1 |
+| Landing por seção nos 2 temas (L15) | não feito | N1 |
+| Drag do Calendar (L7 parcial) | só Kanban coberto | N1 |
+| Lint `rgb()/hsl()/oklch()`, hex 3/8 dígitos, `bg-[#…]` (L12); `/dev/theme` (L13); sem transição na troca (L14) | não feito | N3 |
+| Regras de tema em README/CONTRIBUTING (L19); otimizar `midialogo.png` (L18) | não feito | N5 |
+| Decisão do dono: atalho de teclado (L16), sync entre dispositivos (L17) | exige decisão | N5 |
 
 ---
 
@@ -72,8 +86,8 @@
 |---|---|---|---|
 | **B1** | `next build` nunca rodou | `npm ci && npm run build` na sua máquina | build verde, sem erro de tipo/hidratação |
 | **B2** | CI nunca executou | abrir PR com o patch; observar `quality` e `e2e` | 2 jobs verdes |
-| **B3 ✅** | Versões do Playwright: `@playwright/test` está `^1.56.1`, mas `overrides` fixa `playwright-core@1.56.1` | trocar para `"@playwright/test": "1.56.1"` (exato) **ou** subir os dois juntos; rodar `npm ci` | `npm ls playwright-core` com uma única versão |
-| **B4 ✅** | Node mínimo | vitest 5 exige Node ≥ 22.12. Criar `.nvmrc` (`22`) e `"engines": {"node": ">=22.12"}` | `node -v` ≥ 22.12 no deploy |
+| **B3 ✅ (N0)** | Versões do Playwright: `@playwright/test` está `^1.56.1`, mas `overrides` fixa `playwright-core@1.56.1` | trocar para `"@playwright/test": "1.56.1"` (exato) **ou** subir os dois juntos; rodar `npm ci` | `npm ls playwright-core` com uma única versão |
+| **B4 ✅ (N0)** | Node mínimo | vitest 5 exige Node ≥ 22.12. Criar `.nvmrc` (`22`) e `"engines": {"node": ">=22.12"}` | `node -v` ≥ 22.12 no deploy |
 
 ---
 
@@ -105,30 +119,25 @@ Regra de uso: **nunca** `dark:`, `white`, `black` nem hex em componente — o ES
 | R8 | hex em TSX → paleta movida para `src/lib/constants/avatar-colors.ts`; Avatar sem `color` usa `bg-primary` |
 
 ### Arquivos novos / relevantes
-`src/lib/theme/{constants,resolve,init-script,theme-store}.ts` (+ `*.test.ts`) · `src/hooks/use-theme.ts` · `src/components/layout/{ThemeSync,ThemeToggle}.tsx` · `src/lib/utils/color.ts` (+ teste) · `src/lib/constants/avatar-colors.ts` · `scripts/check-contrast.mjs` · `vitest.config.ts` · `playwright.config.ts` · `e2e/{theme,a11y}.spec.ts` · `.github/workflows/ci.yml` · `docs/*`. (`theme-system.patch` acompanha o zip, fora da árvore git.)
+`src/lib/theme/{constants,resolve,init-script,theme-store}.ts` (+ `*.test.ts`) · `src/hooks/use-theme.ts` · `src/components/layout/{ThemeSync,ThemeToggle}.tsx` · `src/lib/utils/color.ts` (+ teste) · `src/lib/constants/avatar-colors.ts` · `scripts/check-contrast.mjs` · `vitest.config.ts` · `playwright.config.ts` · `e2e/{theme,a11y,a11y-full,overlays}.spec.ts` + `e2e/helpers.ts` · `.github/workflows/ci.yml` · `docs/*`. (`theme-system.patch` acompanha o zip, fora da árvore git.)
 
 ---
 
 ## 6. Como retomar (5 minutos)
 
 ```bash
-unzip Content-OS-themed.zip && cd Content-OS-main
-nvm use 22            # ou Node >= 22.12
-npm ci
-npx playwright install chromium
+unzip CONTENT-OS-SESSION-PACK.zip && cd CONTENT-OS-SESSION-PACK
+bash verify-pack.sh                    # tem de terminar com "PACK OK"
+cd project/Content-OS-main             # já é um repo git com o histórico
+nvm use 22                             # ou Node >= 22.12
+npm ci && npx playwright install chromium   # sandbox: PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers
 
-# portões (todos devem estar verdes antes de qualquer coisa nova)
 npm run lint && npm run typecheck && npm test && npm run contrast
-npm run e2e           # sobe o dev server sozinho (PORT=3100 por padrão)
+# e2e: o dev server compila rota sob demanda — aqueça antes (HANDOFF §7.12) e rode em background
 ```
-Aplicar no **seu** repositório (o zip tem um `.git` próprio, criado no sandbox; `theme-system.patch` fica na raiz do zip, ao lado da pasta do projeto — copie-o para a raiz do seu repo):
-```bash
-git checkout -b feat/theme-system
-git apply --check theme-system.patch && git apply theme-system.patch
-npm install            # regenera o lockfile (o patch inclui o lockfile do sandbox)
-git add -A && git commit -m "feat(theme): dark/light/system theme system"
-```
-Login de demonstração (e2e e QA manual): botão **“Entrar com conta de demonstração”** em `/login`.
+Aplicar no **seu** repositório (a partir do original): `git apply --check theme-system.patch && git apply theme-system.patch && npm install`.
+O patch está em `theme-system.patch` (raiz do pack) e foi gerado com `git diff <commit base> HEAD --binary`.
+Login de demonstração: botão **“Entrar com conta de demonstração”** em `/login`.
 
 ---
 
@@ -147,7 +156,20 @@ Login de demonstração (e2e e QA manual): botão **“Entrar com conta de demon
 
 ---
 
-## 8. Registro da engenharia de prompt desta sessão (técnica do guia `elite_prompt_engineering.md`)
+11. **Upload errado** custou uma volta inteira: sempre anexar só o `CONTENT-OS-SESSION-PACK.zip` e rodar `verify-pack.sh` primeiro.
+12. **`next dev` compila a rota no 1º acesso**: com `.next` limpo e vários workers, testes estouram 30 s sem ser bug. Aqueça (`curl` em todas as rotas), use `--workers=2` e o timeout de 60 s do config. No CI (`build + start`) não ocorre.
+13. **Hidratação**: clique/asserção logo após `goto` falha sob carga. Use `waitHydrated(page)` (marcador `__reactContainer`), não `networkidle`.
+14. **Shell do sandbox**: `pkill -f "next-server|next dev"` mata o próprio shell (e deixa o commit pela metade). Mate por PID/porta (`ss -ltnp | grep 3100`). Comando único tem teto de ~300 s: rode e2e longo em background (`setsid nohup … &`) e leia o log.
+15. **Zip**: excluir `node_modules`, `.next`, `test-results`, `playwright-report` antes de empacotar; sem expansão `{a,b}` em `rm`. Conferir que o `.git` foi junto.
+16. **Drag Kanban**: o card fantasma usa `opacity-40` de propósito (contraste ≈1,8–2,2:1, transitório). O teste exclui só ele; é achado, não regressão de tema.
+
+---
+
+## 8. Registro da engenharia de prompt (arquivado)
+
+> A seção abaixo é histórico da sessão S0–S9. O prompt **vigente** está em `NEXT-SESSION-PROMPT.md` (raiz do pack).
+
+## 8-hist. (S0–S9) (técnica do guia `elite_prompt_engineering.md`)
 
 **Prompt original:** “aplique o elite prompt engineering para melhorar o prompt, depois execute; crie handoff e plano de ação contínuo para a próxima sessão: o que foi feito × o que falta, resumo etc.”
 

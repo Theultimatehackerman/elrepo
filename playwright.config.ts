@@ -6,6 +6,7 @@ export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
   expect: { timeout: 20_000 }, // dev server compila rota sob demanda (só afeta `next dev`; o CI usa build+start)
+  timeout: 60_000, // dev server compila rota sob demanda no 1º acesso (CI usa build+start)
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",

@@ -5,7 +5,31 @@
 
 ---
 
-## 1. Princípios (valem para toda sessão)
+## 1. Painel de progresso, PRÓXIMO PASSO e princípios
+
+### 1.1 Painel (atualize ao fim de cada sessão)
+
+| Sessão | Escopo | Estado | Quem consegue fechar |
+|---|---|---|---|
+| S0–S9 | Implementação do sistema de temas | ✅ concluída | — |
+| N0 | Build, CI, pins, QA no ambiente real | ⚠️ parcial: **L3, L4 ✅**; **L1, L2, L5 ⬜** | **você** (máquina real/CI) |
+| N1 | Cobertura de testes | ⚠️ parcial: **L6, L11 ✅**, L7 parcial; **L8, L9, L15 ⬜** | sandbox |
+| N2 | Gate de regressão visual (L10) | ⬜ | você/CI (precisa da fonte Geist real e de N0) |
+| N3 | Lint mais duro, `/dev/theme`, sem transição na troca (L12–L14) | ⬜ | sandbox |
+| N4 | QA manual multi-navegador (L5) | ⬜ | **você** |
+| N5 | Polimento e fechamento (L16, L18, L19) | ⬜ | sandbox (L16 depende de decisão sua) |
+
+### 1.2 PRÓXIMO PASSO (ordem recomendada)
+
+1. **Você (em paralelo, ~45 min):** N0 — `npm run build`, abrir PR e ver o CI, abrir o app com Geist real nos 2 temas. Cole os logs na próxima sessão.
+2. **Sessão (sandbox):** N1 restante → **mobile** (L8), **PDF/PNG no claro** (L9), **landing por seção** (L15), **drag do Calendar** (L7). Um commit `test(theme): … mobile and export`.
+3. **Sessão (sandbox):** N3 (L12–L14). Um commit.
+4. **Sessão (sandbox):** N5 parcial (L18, L19; L16 só se você decidir). Um commit.
+5. **Depois do N0 verde:** N2 (baselines no CI) e N4 (QA manual).
+
+**Fora do alcance do sandbox (sempre “não verificado” aqui):** `next build` com Google Fonts, CI real, Safari/iOS/Firefox, fonte Geist, baselines visuais.
+
+### 1.3 Princípios (valem para toda sessão)
 
 1. **Medir antes de afirmar.** Nada é “pronto” sem comando + resultado. O que não foi verificado fica marcado `não verificado`.
 2. **Um commit por sessão**, mensagem `tipo(escopo): …`, aplicação nunca quebrada entre sessões.
@@ -21,10 +45,12 @@ npm run lint          # 0 problemas (regra de cor em "error")
 npm run typecheck     # next typegen && tsc --noEmit
 npm test              # Vitest — baseline: 22 passando
 npm run contrast      # AA nos dois temas
-npm run e2e           # Playwright + axe — baseline: 23 passando
+npm run e2e           # Playwright + axe — baseline: **75** passando (5 tema + 28 contraste + 30 axe completo + 12 overlays) (sandbox: aqueça rotas, --workers=2, em background)
 npm run build         # ⚠️ nunca rodou no sandbox (fontes) — N0
 ```
-**Baseline atual (07/10/2026):** lint 0 · tsc 0 · 22 unit · contraste ✅ · 23 e2e · build `não verificado`.
+**Baseline atual (07/10/2026):** lint 0 · tsc 0 · 22 unit · contraste ✅ · e2e **75** passando (5 tema + 28 contraste + 30 axe completo + 12 overlays) · build `não verificado`.
+
+**Rodar e2e no sandbox (receita):** (1) `setsid nohup npm run dev -- -p 3100 > /tmp/dev.log 2>&1 &`; (2) `curl` em todas as rotas para compilar; (3) `setsid nohup npx playwright test --workers=2 --reporter=line > /tmp/e2e.log 2>&1 &`; (4) consultar o log (comando único ≈300 s). Encerrar servidor por PID/porta, **nunca** `pkill -f`.
 
 ---
 
@@ -41,14 +67,14 @@ Legenda: **P0** bloqueia merge · **P1** necessário para considerar “concluí
 | L5 | P1 | QA manual em Safari/iOS e Firefox | N0/N4 | checklist da seção 4-N4 sem falhas |
 | L6 | P1 | ✅ Cobrir rotas dinâmicas e públicas nos 2 temas | N1 | e2e/axe incluem `/content/[id]`, `/clients/[id]`, `/campaigns/[id]`, `/review/…`, 404 |
 | L7 | P1 | ✅ (parcial: Modal, Dropdown, Select, Tooltip, Toast, drag Kanban; falta drag do Calendar) Cobrir estados abertos: Modal, Select, Dropdown, Tooltip, Toast, drag overlay (Kanban/Calendar) | N1 | axe roda com cada overlay aberto, 2 temas |
-| L8 | P1 | Viewport mobile + `MobileNav` | N1 | e2e em 390×844, 2 temas, sem violações |
-| L9 | P1 | Exportação **PDF** e PNG no claro | N1 | arquivo gerado; fundo e texto legíveis (verificação visual registrada) |
+| L8 | P1 | ⬜ Viewport mobile + `MobileNav` | N1 | e2e em 390×844, 2 temas, sem violações |
+| L9 | P1 | ⬜ Exportação **PDF** e PNG no claro | N1 | arquivo gerado; fundo e texto legíveis (verificação visual registrada) |
 | L10 | P1 | Gate de regressão visual (D9) com fonte real | N2 | `toHaveScreenshot` no repo, baselines escuro+claro, relógio congelado |
 | L11 | P2 | ✅ axe completo (não só `color-contrast`) | N1 | regras `wcag2a/2aa` sem violações novas |
 | L12 | P2 | Lint: `rgb()/hsl()/oklch()`, hex de 3/8 dígitos, `bg-[#…]` | N3 | teste do lint com fixture que falha; 0 ocorrências hoje |
 | L13 | P2 | Página-vitrine `/dev/theme` (só em desenvolvimento) | N3 | lista todos os tokens e componentes nos 2 temas; 404 em produção |
 | L14 | P2 | Suprimir transições durante a troca de tema | N3 | sem “flash” de cor animada ao alternar (verificado em vídeo/trace) |
-| L15 | P2 | Landing completa nos 2 temas (todas as seções, gradientes, logo) | N1 | screenshots revisados; sem contraste ruim |
+| L15 | P2 | ⬜ Landing completa nos 2 temas (todas as seções, gradientes, logo) | N1 | screenshots revisados; sem contraste ruim |
 | L16 | P3 | Atalho de teclado para alternar tema | N5 | documentado + teste |
 | L17 | P3 | Sincronizar preferência entre dispositivos (exigiria mudar D4) | — | só com decisão explícita |
 | L18 | P3 | `midialogo.png` 1 MB exibido a 24–44 px | N5 | < 100 KB, transparente, ok nos 2 temas |
@@ -170,8 +196,20 @@ Checklist manual (anotar ✅/❌ + navegador/versão no log):
 |---|---|---|---|---|
 | 07/10/2026 | S0–S9 (plano original) | ✅ implementação completa | lint 0 · tsc 0 · 22 unit · contraste AA · 23 e2e · diff do escuro 0,01–1,16%/rota | build e CI não verificados; ver HANDOFF §3–§4 |
 | 07/10/2026 | N0 (parcial) | ⚠️ L3, L4 ✅; L1, L2, L5 **não verificados** (sandbox) | Passo 0: lint 0 · tsc 0 · 22 unit · contraste AA · 23 e2e (= baseline). `npm ls playwright-core` → 1 versão (1.56.1). `.nvmrc`=22, `engines.node`=">=22.12". `npm run build` falha **só** por Google Fonts inacessível (Geist/Geist Mono) | **Rodar no ambiente real:** `npm run build`, PR com CI (`quality`,`e2e`), abrir com Geist real nos 2 temas. Só então marcar N0 ✅. Achado: `npm run build` aqui nunca passa sem rede p/ fonts; considerar `next/font/local` (fora do escopo) |
-| 07/10/2026 | N1 (parcial) | ⚠️ L6, L11 ✅; L7 parcial; **L8, L9, L15 não feitos** | e2e/helpers.ts, a11y.spec (+5 rotas dinâmicas/404), a11y-full.spec (wcag2a/2aa, 15 rotas × 2 temas), overlays.spec (6 overlays × 2 temas). Rodados: overlays 12/12 ✅; a11y-full nas 4 rotas com allow-list 10/10 ✅; lint 0 · tsc 0 · 22 unit. **Suíte e2e completa NÃO reexecutada após as mudanças** | **Achados (fora do tema, idênticos nos 2 temas, em KNOWN):** 3 SelectTrigger sem nome em /content e /calendar (button-name); /calendar Select de mês com aria-controls inválido; /settings input sem label; /content/[id] botão de ícone sem aria-label. **Achado de contraste:** card fantasma do Kanban usa `opacity-40` (≈1,8–2,2:1), excluído da varredura só durante o arrasto. Pendente N1: mobile (Pixel 7 + MobileNav), PDF/PNG claro, landing por seção, drag do Calendar |
+| 07/10/2026 | N1 (parcial) | ⚠️ L6, L11 ✅; L7 parcial; **L8, L9, L15 não feitos** | e2e/helpers.ts, a11y.spec (+5 rotas dinâmicas/404), a11y-full.spec (wcag2a/2aa, 15 rotas × 2 temas), overlays.spec (6 overlays × 2 temas). Rodados: overlays 12/12 ✅; a11y-full nas 4 rotas com allow-list 10/10 ✅; lint 0 · tsc 0 · 22 unit. **Suíte completa: 75 testes — 1 execução cheia (72 ✅; 2 falhas eram SIGKILL de um processo duplicado meu; 1 falso positivo de contraste na landing/claro dentro do axe completo, intermitente por animação) + reexecução dos 15 testes `tema light` do axe completo ✅ após remover `color-contrast` dele (contraste segue em a11y.spec). Não houve uma 2ª execução cheia única depois da edição final** | **Achados (fora do tema, idênticos nos 2 temas, em KNOWN):** 3 SelectTrigger sem nome em /content e /calendar (button-name); /calendar Select de mês com aria-controls inválido; /settings input sem label; /content/[id] botão de ícone sem aria-label. **Achado de contraste:** card fantasma do Kanban usa `opacity-40` (≈1,8–2,2:1), excluído da varredura só durante o arrasto. Pendente N1: mobile (Pixel 7 + MobileNav), PDF/PNG claro, landing por seção, drag do Calendar |
 | — | N2 | ⬜ | | |
 | — | N3 | ⬜ | | |
 | — | N4 | ⬜ | | |
 | — | N5 | ⬜ | | |
+
+### Achados acumulados (nenhum corrigido; fora do escopo do tema)
+
+| ID | Onde | Achado | Sugestão |
+|---|---|---|---|
+| A1 | `/content`, `/calendar` | 3 `SelectTrigger` de filtro sem nome acessível (`button-name`) | `aria-label` em cada trigger |
+| A2 | `/calendar` | Select de mês: `aria-controls` aponta id inexistente (`aria-valid-attr-value`) | revisar uso do Radix Select fechado |
+| A3 | `/settings` | `input` sem label associado (`label`) | `aria-label`/`<label>` |
+| A4 | `/content/[id]` | botão só com ícone sem nome (`button-name`) | `aria-label` |
+| A5 | Kanban (arrasto) | card fantasma com `opacity-40`: contraste ≈1,8–2,2:1 (transitório) | decisão de design: reduzir menos a opacidade |
+| A6 | landing `/` no claro | axe completo viu contraste baixo em 3 nós **durante a animação de entrada** (intermitente) | confirmar em L15 com revisão visual estática; considerar reduced motion no framer-motion |
+| A7 | e2e em dev server | compilação sob demanda causa timeouts a frio | manter timeout 60 s; CI usa build+start |
