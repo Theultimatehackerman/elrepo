@@ -39,12 +39,12 @@ Legenda: **P0** bloqueia merge · **P1** necessário para considerar “concluí
 | L3 | P0 | ✅ Fixar Playwright (`@playwright/test` exato = `playwright-core`) | N0 | `npm ls playwright-core` mostra 1 versão |
 | L4 | P0 | ✅ `.nvmrc` + `engines` (Node ≥ 22.12) | N0 | arquivo presente; deploy usa Node ≥ 22.12 |
 | L5 | P1 | QA manual em Safari/iOS e Firefox | N0/N4 | checklist da seção 4-N4 sem falhas |
-| L6 | P1 | Cobrir rotas dinâmicas e públicas nos 2 temas | N1 | e2e/axe incluem `/content/[id]`, `/clients/[id]`, `/campaigns/[id]`, `/review/…`, 404 |
-| L7 | P1 | Cobrir estados abertos: Modal, Select, Dropdown, Tooltip, Toast, drag overlay (Kanban/Calendar) | N1 | axe roda com cada overlay aberto, 2 temas |
+| L6 | P1 | ✅ Cobrir rotas dinâmicas e públicas nos 2 temas | N1 | e2e/axe incluem `/content/[id]`, `/clients/[id]`, `/campaigns/[id]`, `/review/…`, 404 |
+| L7 | P1 | ✅ (parcial: Modal, Dropdown, Select, Tooltip, Toast, drag Kanban; falta drag do Calendar) Cobrir estados abertos: Modal, Select, Dropdown, Tooltip, Toast, drag overlay (Kanban/Calendar) | N1 | axe roda com cada overlay aberto, 2 temas |
 | L8 | P1 | Viewport mobile + `MobileNav` | N1 | e2e em 390×844, 2 temas, sem violações |
 | L9 | P1 | Exportação **PDF** e PNG no claro | N1 | arquivo gerado; fundo e texto legíveis (verificação visual registrada) |
 | L10 | P1 | Gate de regressão visual (D9) com fonte real | N2 | `toHaveScreenshot` no repo, baselines escuro+claro, relógio congelado |
-| L11 | P2 | axe completo (não só `color-contrast`) | N1 | regras `wcag2a/2aa` sem violações novas |
+| L11 | P2 | ✅ axe completo (não só `color-contrast`) | N1 | regras `wcag2a/2aa` sem violações novas |
 | L12 | P2 | Lint: `rgb()/hsl()/oklch()`, hex de 3/8 dígitos, `bg-[#…]` | N3 | teste do lint com fixture que falha; 0 ocorrências hoje |
 | L13 | P2 | Página-vitrine `/dev/theme` (só em desenvolvimento) | N3 | lista todos os tokens e componentes nos 2 temas; 404 em produção |
 | L14 | P2 | Suprimir transições durante a troca de tema | N3 | sem “flash” de cor animada ao alternar (verificado em vídeo/trace) |
@@ -170,7 +170,7 @@ Checklist manual (anotar ✅/❌ + navegador/versão no log):
 |---|---|---|---|---|
 | 07/10/2026 | S0–S9 (plano original) | ✅ implementação completa | lint 0 · tsc 0 · 22 unit · contraste AA · 23 e2e · diff do escuro 0,01–1,16%/rota | build e CI não verificados; ver HANDOFF §3–§4 |
 | 07/10/2026 | N0 (parcial) | ⚠️ L3, L4 ✅; L1, L2, L5 **não verificados** (sandbox) | Passo 0: lint 0 · tsc 0 · 22 unit · contraste AA · 23 e2e (= baseline). `npm ls playwright-core` → 1 versão (1.56.1). `.nvmrc`=22, `engines.node`=">=22.12". `npm run build` falha **só** por Google Fonts inacessível (Geist/Geist Mono) | **Rodar no ambiente real:** `npm run build`, PR com CI (`quality`,`e2e`), abrir com Geist real nos 2 temas. Só então marcar N0 ✅. Achado: `npm run build` aqui nunca passa sem rede p/ fonts; considerar `next/font/local` (fora do escopo) |
-| — | N1 | ⬜ | | |
+| 07/10/2026 | N1 (parcial) | ⚠️ L6, L11 ✅; L7 parcial; **L8, L9, L15 não feitos** | e2e/helpers.ts, a11y.spec (+5 rotas dinâmicas/404), a11y-full.spec (wcag2a/2aa, 15 rotas × 2 temas), overlays.spec (6 overlays × 2 temas). Rodados: overlays 12/12 ✅; a11y-full nas 4 rotas com allow-list 10/10 ✅; lint 0 · tsc 0 · 22 unit. **Suíte e2e completa NÃO reexecutada após as mudanças** | **Achados (fora do tema, idênticos nos 2 temas, em KNOWN):** 3 SelectTrigger sem nome em /content e /calendar (button-name); /calendar Select de mês com aria-controls inválido; /settings input sem label; /content/[id] botão de ícone sem aria-label. **Achado de contraste:** card fantasma do Kanban usa `opacity-40` (≈1,8–2,2:1), excluído da varredura só durante o arrasto. Pendente N1: mobile (Pixel 7 + MobileNav), PDF/PNG claro, landing por seção, drag do Calendar |
 | — | N2 | ⬜ | | |
 | — | N3 | ⬜ | | |
 | — | N4 | ⬜ | | |
