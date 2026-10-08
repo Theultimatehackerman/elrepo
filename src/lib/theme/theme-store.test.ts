@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { applyTheme, readPreference, setPreference, subscribe, initThemeListeners } from "./theme-store";
+import { applyTheme, readPreference, setPreference, subscribe, initThemeListeners, NO_TRANSITION_STYLE_ID } from "./theme-store";
 import { THEME_STORAGE_KEY } from "./constants";
 
 type Listener = () => void;
@@ -11,6 +11,7 @@ beforeEach(() => {
   osDark = false;
   mediaListeners.clear();
   document.documentElement.removeAttribute("data-theme");
+  document.querySelectorAll(`#${NO_TRANSITION_STYLE_ID}`).forEach((n) => n.remove()); // sobra de testes anteriores (timer de 50 ms)
   vi.stubGlobal("matchMedia", () => ({
     get matches() { return osDark; },
     addEventListener: (_: string, l: Listener) => mediaListeners.add(l),
@@ -66,5 +67,44 @@ describe("theme-store", () => {
     window.dispatchEvent(new StorageEvent("storage", { key: THEME_STORAGE_KEY, newValue: "light" }));
     expect(document.documentElement.getAttribute("data-theme")).toBe("light");
     cleanup();
+  });
+});
+
+describe("applyTheme sem transições (L14)", () => {
+  const styleTag = () => document.getElementById(NO_TRANSITION_STYLE_ID);
+
+  it("troca de tema: <style> temporário existe no instante da troca e sai depois", () => {
+    vi.useFakeTimers();
+    try {
+      applyTheme("dark");
+      vi.runAllTimers();
+      expect(styleTag()).toBeNull();
+
+      let seenDuringSwap = false;
+      const observer = new MutationObserver(() => {});
+      observer.observe(document.documentElement, { attributes: true });
+      const original = document.documentElement.setAttribute.bind(document.documentElement);
+      vi.spyOn(document.documentElement, "setAttribute").mockImplementation((name, value) => {
+        if (name === "data-theme") seenDuringSwap = styleTag() !== null;
+        original(name, value);
+      });
+      applyTheme("light");
+      observer.disconnect();
+
+      expect(seenDuringSwap).toBe(true);
+      expect(document.documentElement.getAttribute("data-theme")).toBe("light");
+      expect(styleTag()?.textContent).toContain("transition:none");
+      vi.advanceTimersByTime(60);
+      expect(styleTag()).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("reaplicar o mesmo tema não injeta <style>", () => {
+    applyTheme("dark");
+    document.getElementById(NO_TRANSITION_STYLE_ID)?.remove();
+    applyTheme("dark");
+    expect(styleTag()).toBeNull();
   });
 });

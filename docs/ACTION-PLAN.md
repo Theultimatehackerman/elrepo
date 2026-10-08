@@ -1,7 +1,7 @@
 # ACTION PLAN CONTÍNUO — Sistema de Temas do Content OS
 
 > Documento **vivo**: ao fim de cada sessão, atualize a seção 8 (log) e marque os itens do backlog.
-> Estado atual e contexto: [`HANDOFF.md`](./HANDOFF.md). Última atualização: **07/10/2026 (fim da sessão N1)**.
+> Estado atual e contexto: [`HANDOFF.md`](./HANDOFF.md). Última atualização: **07/10/2026 (fim da sessão N3)**.
 
 ---
 
@@ -15,15 +15,15 @@
 | N0 | Build, CI, pins, QA no ambiente real | ⚠️ parcial: **L3, L4 ✅**; **L1, L2, L5 ⬜** | **você** (máquina real/CI) |
 | N1 | Cobertura de testes | ✅ **concluída no sandbox**: L6, L7, L8, L9, L11, L15 ✅ | — |
 | N2 | Gate de regressão visual (L10) | ⬜ | você/CI (precisa da fonte Geist real e de N0) |
-| N3 | Lint mais duro, `/dev/theme`, sem transição na troca (L12–L14) | ⬜ | sandbox |
+| N3 | Lint mais duro, `/dev/theme`, sem transição na troca (L12–L14) | ✅ **concluída no sandbox** (L12, L13, L14 ✅; 404 de `/dev/theme` em `next build && next start` **não verificado**) | — |
 | N4 | QA manual multi-navegador (L5) | ⬜ | **você** |
 | N5 | Polimento e fechamento (L16, L18, L19) | ⬜ | sandbox (L16 depende de decisão sua) |
 
 ### 1.2 PRÓXIMO PASSO (ordem recomendada)
 
 1. **Você (em paralelo, ~45 min):** N0 — `npm run build`, abrir PR e ver o CI, abrir o app com Geist real nos 2 temas. Cole os logs na próxima sessão (N0/N2/N4 só você fecha).
-2. **Sessão (sandbox):** **N3** — L12 (lint mais duro), L13 (`/dev/theme`), L14 (sem transição na troca). Um commit `feat(theme): stricter color lint, dev showcase, transition suppression`.
-3. **Sessão (sandbox):** **N5 parcial** — L18 (`midialogo.png`), L19 (regras em README/CONTRIBUTING); L16 só se você decidir "sim". Um commit.
+2. ✅ **N3 feita** (commit `feat(theme): stricter color lint, dev showcase, transition suppression`). No `next build && next start` confira que `/dev/theme` dá 404 (só você consegue).
+3. **Sessão (sandbox):** **N5 parcial** — próximo passo — L18 (`midialogo.png`), L19 (regras em README/CONTRIBUTING); L16 só se você decidir "sim". Um commit.
 4. **Depois do N0 verde:** N2 (baselines visuais no CI) e N4 (QA manual Safari/iOS/Firefox).
 5. **Achados A9/A10 (PDF de 17 MB, margem branca no PDF escuro):** decisão sua se viram item (hoje fora do escopo do tema).
 
@@ -43,12 +43,12 @@
 ```bash
 npm run lint          # 0 problemas (regra de cor em "error")
 npm run typecheck     # next typegen && tsc --noEmit
-npm test              # Vitest — baseline: 22 passando
+npm test              # Vitest — baseline: 36 passando (22 tema/cor + 10 fixtures do lint + 2 vitrine + 2 transições)
 npm run contrast      # AA nos dois temas
-npm run e2e           # Playwright + axe — baseline: **99** passando (5 tema + 28 contraste + 30 axe completo + 14 overlays + 16 mobile + 4 export + 2 landing) (sandbox: use scripts/e2e-sandbox.sh)
+npm run e2e           # Playwright + axe — baseline: **99** (5 tema + 28 contraste + 30 axe completo + 14 overlays + 16 mobile + 4 export + 2 landing) + 6 de `dev-theme` = 105 listados (99 do Passo 0 + 6 de `dev-theme.spec.ts`): **104 passam + 1 skip** (teste de 404 da vitrine, só roda no CI) — suíte completa `DONE exit=0`, 5,1 min (sandbox: use scripts/e2e-sandbox.sh)
 npm run build         # ⚠️ nunca rodou no sandbox (fontes) — N0
 ```
-**Baseline atual (07/10/2026):** lint 0 · tsc 0 · 22 unit · contraste ✅ · e2e **99** passando (5 tema + 28 contraste + 30 axe completo + 14 overlays + 16 mobile + 4 export + 2 landing; projetos `chromium` e `mobile`) · build `não verificado`.
+**Baseline atual (07/10/2026, fim do N3):** lint 0 · tsc 0 · **36** unit · contraste ✅ · e2e 105 listados (99 do Passo 0 + 6 de `dev-theme.spec.ts`): **104 passam + 1 skip** (teste de 404 da vitrine, só roda no CI) — suíte completa `DONE exit=0`, 5,1 min; projetos `chromium` e `mobile` · build `não verificado`.
 
 **Rodar e2e no sandbox (receita, versão 3):** um único script em background — `rm -f /tmp/e2e-status; setsid nohup bash scripts/e2e-sandbox.sh > /tmp/run-all.out 2>&1 &`. Ele sobe o dev server, aquece as 15 rotas e roda `playwright test --workers=2`. **Só há resultado quando `/tmp/e2e-status` contém `DONE exit=…`** (log em `/tmp/e2e-full.log`). Sem `DONE` e com o log parado = o processo morreu (acontece entre turnos): reinicie, não conclua. O Playwright apaga `test-results/` a cada execução: copie exports/capturas para `/tmp` antes de reexecutar. Encerrar servidor por PID/porta, **nunca** `pkill -f`.
 
@@ -71,9 +71,9 @@ Legenda: **P0** bloqueia merge · **P1** necessário para considerar “concluí
 | L9 | P1 | ✅ Exportação **PDF** e PNG no claro (e escuro) | N1 | arquivo gerado; fundo e texto legíveis (verificação visual registrada) |
 | L10 | P1 | Gate de regressão visual (D9) com fonte real | N2 | `toHaveScreenshot` no repo, baselines escuro+claro, relógio congelado |
 | L11 | P2 | ✅ axe completo (não só `color-contrast`) | N1 | regras `wcag2a/2aa` sem violações novas |
-| L12 | P2 | Lint: `rgb()/hsl()/oklch()`, hex de 3/8 dígitos, `bg-[#…]` | N3 | teste do lint com fixture que falha; 0 ocorrências hoje |
-| L13 | P2 | Página-vitrine `/dev/theme` (só em desenvolvimento) | N3 | lista todos os tokens e componentes nos 2 temas; 404 em produção |
-| L14 | P2 | Suprimir transições durante a troca de tema | N3 | sem “flash” de cor animada ao alternar (verificado em vídeo/trace) |
+| L12 | P2 | ✅ Lint: `rgb()/hsl()/oklch()`, hex de 3/8 dígitos, `bg-[#…]` | N3 | teste do lint com fixture que falha; 0 ocorrências hoje |
+| L13 | P2 | ✅ Página-vitrine `/dev/theme` (só em desenvolvimento) | N3 | lista todos os tokens e componentes nos 2 temas; 404 em produção |
+| L14 | P2 | ✅ Suprimir transições durante a troca de tema | N3 | sem “flash” de cor animada ao alternar (verificado em vídeo/trace) |
 | L15 | P2 | ✅ Landing completa nos 2 temas (todas as seções, gradientes, logo) | N1 | screenshots revisados; sem contraste ruim |
 | L16 | P3 | Atalho de teclado para alternar tema | N5 | documentado + teste |
 | L17 | P3 | Sincronizar preferência entre dispositivos (exigiria mudar D4) | — | só com decisão explícita |
@@ -120,7 +120,7 @@ Cada sessão: **objetivo → passos → aceite → commit**. Tempo é estimativa
 **Aceite:** gate verde em re-execução (sem flakiness em 3 execuções seguidas); mudar um token propositalmente faz o teste falhar (provar com uma alteração descartada).
 **Commit:** `test(visual): add screenshot regression gate for dark and light`
 
-### N3 — Endurecer guarda-corpos e DX (60–90 min) · fecha L12–L14
+### N3 — ✅ CONCLUÍDA (sandbox) · fecha L12–L14
 1. `eslint.config.mjs`: ampliar seletores para `rgb(`, `hsl(`, `oklch(`, hex de 3/4/8 dígitos e `\[#` em classes arbitrárias. Escrever fixtures em `scripts/lint-fixtures/` e um teste que prova que **falham**; manter as isenções atuais.
 2. Criar `src/app/dev/theme/page.tsx` (vitrine: tokens com swatch + razão de contraste, e todos os componentes de `components/ui`), com `notFound()` quando `process.env.NODE_ENV === "production"`.
 3. Suprimir transições na troca de tema (inserir `<style>` temporário `*{transition:none!important}` por 1 frame em `applyTheme`, com teste unitário).
@@ -200,7 +200,8 @@ Checklist manual (anotar ✅/❌ + navegador/versão no log):
 | 07/10/2026 | N1 (conclusão) | ✅ L7, L8, L9, L15 fechados (L6, L11 já ✅) | Passo 0 = baseline (75 e2e). Novos specs: `mobile.spec.ts` (16/16 ✅), `export.spec.ts` (4/4 ✅; PNG claro, PDF claro e PDF escuro **vistos**), `landing.spec.ts` (2/2 ✅ após correção; 9 seções × 2 temas **vistas**), `overlays.spec.ts` + drag do Calendar (2/2 ✅). Config: projeto `mobile` (Pixel 7). Correção: `CalendarShowcase.tsx` L38 `text-muted-foreground/60`→`text-muted-foreground`. lint 0 · tsc 0 · 22 unit · contraste AA. Suíte completa: ver linha “e2e completo” abaixo | **A8** (corrigido): números dos dias na landing com 3,42:1 (escuro) e 2,59:1 (claro). **A9:** PDF exportado ≈17 MB por 1 página (jsPDF sem compressão) — fora do tema. **A10:** PDF escuro sai com margem de página branca (A4) — decisão de design. **Armadilhas novas:** processos em background morrem entre turnos; `sh` sem `PIPESTATUS`; Playwright apaga `test-results/` |
 | 07/10/2026 | e2e completo (N1) | ✅ 99/99 passando | `bash scripts/e2e-sandbox.sh` → `/tmp/e2e-status` = `DONE exit=0`; “99 passed (12.8m)”; projetos chromium (83) + mobile (16). 1ª tentativa morreu em 92/99 (processo encerrado entre turnos) e foi **descartada**; vale a 2ª execução completa | |
 | — | N2 | ⬜ | | |
-| — | N3 | ⬜ | | |
+| 07/10/2026 | N3 | ✅ L12, L13, L14 | Passo 0 = baseline (lint 0 · tsc 0 · 22 unit · contraste AA · e2e 99/99, 5,7 min, `DONE exit=0`). **L12:** `eslint.config.mjs` agora barra hex 3/4/6/8 dígitos, `rgb/rgba/hsl/hsla/hwb/lab/lch/oklab/oklch(` e `-[#…]` (strings e template literals); 0 ocorrências no código; 10 fixtures em `scripts/lint-fixtures/` (8 `fail-*` reprovam, 1 `pass-*` passa) testadas por `color-lint.test.ts` (Vitest). **L13:** `/dev/theme` (`src/app/dev/theme/page.tsx` + `ThemeShowcase`) com todos os `--color-*` (swatch, valor computado, razão de contraste ao vivo) e os componentes de `ui/`; `isDevShowcaseEnabled()` → `notFound()` em produção; teste garante que todo token de `globals.css` está listado; `e2e/dev-theme.spec.ts` (razões ≥ 4,5 e axe contraste nos 2 temas + teste L14; **no CI, onde roda `build + start`, os testes de vitrine são pulados e um teste exige 404** — esse último só rodará de fato no CI, **não verificado aqui**). **L14:** `applyTheme` injeta `<style id=theme-no-transition>` (`transition:none`) só quando o tema muda e o remove em 50 ms; unit + e2e (o e2e foi visto **falhar** sem a correção). Portões finais: lint 0 · tsc 0 · 36 unit · contraste AA. Specs afetados: `dev-theme` + `theme` 10/10. Capturas de `/dev/theme` (topo, claro e escuro) **vistas**. Suíte completa: ver linha “e2e completo (N3)” | **Não verificado:** `next build && next start` (404 da vitrine em produção; só o guard foi testado por unit); parte de baixo da vitrine (galeria de componentes) não foi vista, só passou no axe de contraste. Sem achados novos fora do tema |
+| 07/10/2026 | e2e completo (N3) | ✅ 104 passed + 1 skipped, `exit=0` | `bash scripts/e2e-sandbox.sh` → `/tmp/e2e-status` = `DONE exit=0`; “104 passed (5.1m)”, “1 skipped” (= `em produção /dev/theme dá 404`, só roda com `CI=1`). **1ª execução cheia: 103 passed + 1 falha** (`a11y.spec › axe light › /` — contraste 3,29:1 com `#7f8490`, ou seja o muted a ~76% de opacidade: fade de entrada do `Reveal` em andamento = **A6**); reproduzida (1 em 10 e 1 em 25 com `--repeat-each`). **Correção de teste (não do app):** `waitMotionSettled` em `e2e/helpers.ts` (usado em `a11y.spec` e `mobile.spec`) espera as animações assentarem, limitado a 4 s; `--repeat-each=40` → **40/40**. A execução com falha foi descartada; vale a 2ª execução cheia | **A6 mitigado** no teste (o app não mudou). Armadilha: `kill` por padrão de `ps` (`sh -c next`) mata o próprio shell — mate só o PID do servidor |
 | — | N4 | ⬜ | | |
 | — | N5 | ⬜ | | |
 
@@ -213,7 +214,7 @@ Checklist manual (anotar ✅/❌ + navegador/versão no log):
 | A3 | `/settings` | `input` sem label associado (`label`) | `aria-label`/`<label>` |
 | A4 | `/content/[id]` | botão só com ícone sem nome (`button-name`) | `aria-label` |
 | A5 | Kanban (arrasto) | card fantasma com `opacity-40`: contraste ≈1,8–2,2:1 (transitório) | decisão de design: reduzir menos a opacidade |
-| A6 | landing `/` no claro | axe completo viu contraste baixo em 3 nós **durante a animação de entrada** (intermitente) | confirmar em L15 com revisão visual estática; considerar reduced motion no framer-motion |
+| A6 | landing `/` no claro | axe viu contraste baixo **durante a animação de entrada** do `Reveal` (intermitente: 1 em 10–25 sob carga) | ✅ mitigado no teste: `waitMotionSettled` (e2e/helpers.ts). Opcional (decisão sua): `MotionConfig reducedMotion="user"` no framer-motion |
 | A7 | e2e em dev server | compilação sob demanda causa timeouts a frio | manter timeout 60 s; CI usa build+start |
 | A8 | landing `/` (CalendarShowcase L38) | ✅ **corrigido**: `text-muted-foreground/60` em texto de 10px (3,42:1 escuro / 2,59:1 claro) | já aplicado: cor cheia do token (AA validado em check-contrast) |
 | A9 | `src/lib/utils/export.ts` | PDF de 1 página pesa ≈17 MB (PNG embutido sem compressão no jsPDF) | passar `compress: true` no `jsPDF` ou usar JPEG; decisão sua |

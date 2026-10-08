@@ -16,8 +16,12 @@ O app era dark-only (classe `dark` fixa, `color-scheme: dark`, seletor de tema d
 - **A11y:** pares validados em WCAG AA por `scripts/check-contrast.mjs`; corrigidas falhas pré-existentes (texto primário, "Agendado", botão destrutivo, avatares, dias fora do mês).
 
 ## Guardrails
-- ESLint (`error`): proíbe `white/black` e hex literal em TS/TSX (exceções: `src/data`, `src/lib/constants`, gradientes, cálculo de cor).
+- ESLint (`error`): proíbe `white/black`, hex de 3/4/6/8 dígitos, `rgb()/hsl()/hwb()/lab()/lch()/oklab()/oklch()` e classes arbitrárias `-[#…]` em TS/TSX (exceções: `src/data`, `src/lib/constants`, gradientes, cálculo de cor). Fixtures em `scripts/lint-fixtures/` provam que as regras reprovam (`color-lint.test.ts`).
 - CI: lint, tipos, Vitest, contraste, Playwright + axe nos dois temas.
+
+## Consequências (N3)
+- `applyTheme` desliga `transition` por ~50 ms **somente quando o tema muda** (tag `<style id="theme-no-transition">`): trocar de tema não anima cores. Animações (`animation`) não são afetadas.
+- `/dev/theme` (vitrine de tokens com razão de contraste ao vivo + componentes) existe só fora de produção (`isDevShowcaseEnabled()` → `notFound()`); um teste garante que todo `--color-*` de `globals.css` está listado nela.
 
 ## Consequências
 Novo componente usa só tokens semânticos. Nova cor → adicionar o par nos dois temas em `globals.css` e em `check-contrast.mjs`.

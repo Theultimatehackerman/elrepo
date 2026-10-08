@@ -1,0 +1,1 @@
+export const a = <div className="bg-[oklch(0.5_0.1_200)]" />;

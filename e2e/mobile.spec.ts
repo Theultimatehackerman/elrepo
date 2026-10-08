@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { loginDemo, STATIC_ROUTES, THEMES, waitHydrated } from "./helpers";
+import { loginDemo, STATIC_ROUTES, THEMES, waitHydrated, waitMotionSettled } from "./helpers";
 
 // Viewport Pixel 7 (412×915). Rotas autenticadas + MobileNav aberta, nos 2 temas.
 // `color-contrast` roda separado (axe completo dá falso positivo em animação, ver ACTION-PLAN A6).
@@ -22,6 +22,7 @@ for (const theme of THEMES) {
       test(`${route}: sem overflow horizontal, axe e contraste`, async ({ page }) => {
         await page.goto(route);
         await waitHydrated(page);
+        await waitMotionSettled(page);
         const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
         expect(overflow, "scroll horizontal na página").toBeLessThanOrEqual(0);
         const full = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).disableRules(["color-contrast"]).analyze();
@@ -37,6 +38,7 @@ for (const theme of THEMES) {
     test("MobileNav abre, tem contraste e navega", async ({ page }) => {
       await page.goto("/dashboard");
       await waitHydrated(page);
+      await waitMotionSettled(page);
       await page.getByRole("button", { name: "Abrir menu" }).click();
       const dialog = page.getByRole("dialog");
       await expect(dialog).toBeVisible();

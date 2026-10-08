@@ -1,0 +1,2 @@
+const c = "x";
+export const a = `bg-[#12345678] ${c}`;

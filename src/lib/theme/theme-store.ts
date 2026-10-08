@@ -26,12 +26,33 @@ export function readPreference(): ThemePreference {
   }
 }
 
-/** Aplica o tema resolvido no DOM. Idempotente. */
+export const NO_TRANSITION_STYLE_ID = "theme-no-transition";
+
+/**
+ * Executa `mutate` com todas as transições desligadas (L14): evita o "flash" de cores animadas
+ * quando o tema troca. O <style> temporário sai logo após o navegador recalcular os estilos.
+ */
+function withoutTransitions(mutate: () => void): void {
+  document.getElementById(NO_TRANSITION_STYLE_ID)?.remove(); // trocas em sequência: uma tag só
+  const style = document.createElement("style");
+  style.id = NO_TRANSITION_STYLE_ID;
+  style.textContent = "*,*::before,*::after{transition:none !important}";
+  document.head.appendChild(style);
+  mutate();
+  void window.getComputedStyle(document.body).opacity; // força o recálculo com as transições desligadas
+  setTimeout(() => style.remove(), 50);
+}
+
+/** Aplica o tema resolvido no DOM. Idempotente (sem troca visual, não mexe em transições). */
 export function applyTheme(preference: ThemePreference = readPreference()): ResolvedTheme {
   const resolved = resolveTheme(preference, systemPrefersDark());
   const root = document.documentElement;
-  root.setAttribute(THEME_ATTRIBUTE, resolved);
-  root.style.colorScheme = resolved;
+  const write = () => {
+    root.setAttribute(THEME_ATTRIBUTE, resolved);
+    root.style.colorScheme = resolved;
+  };
+  if (root.getAttribute(THEME_ATTRIBUTE) === resolved) write();
+  else withoutTransitions(write);
   document.querySelector('meta[name="theme-color"]')?.setAttribute("content", THEME_COLORS[resolved]);
   return resolved;
 }
