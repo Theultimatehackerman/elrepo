@@ -11,10 +11,10 @@
 | | |
 |---|---|
 | **Objetivo** | Escuro (antes fixo) como tema de primeira classe: **Escuro · Claro · Sistema**, troca em tempo real, persistência, zero flash, WCAG AA. |
-| **Estado** | Implementação completa (S0–S9) + **N0 parcial** (pins) + **N1 parcial** (cobertura de rotas dinâmicas, axe completo, overlays). Falta: validação no ambiente real e o restante de N1/N3/N5. |
+| **Estado** | Implementação completa (S0–S9) + **N0 parcial** (pins) + **N1 concluída no sandbox** (rotas dinâmicas, axe completo, overlays + drag Calendar, mobile, export PDF/PNG, landing por seção). Falta: validação no ambiente real (N0/N4), N2, N3 e N5. |
 | **Pronto para merge?** | **Ainda não.** Abertos: **B1** `next build` e **B2** CI (nunca executados; só rodam na sua máquina). B3/B4 resolvidos. |
-| **Baseline (portões)** | lint **0** · tsc **0** · **22** unit · contraste AA (2 temas) · e2e **75** passando (5 tema + 28 contraste + 30 axe completo + 12 overlays) (ver ACTION-PLAN §2) · build `não verificado` |
-| **Histórico git** | 4 commits: `base` (original) → `feat(theme)…` → `chore(theme): pin…` → `test(theme): …N1 partial`. (O hash original `ebf4d7f` não existe aqui; a base foi reconstruída do zip original e o diff é equivalente.) |
+| **Baseline (portões)** | lint **0** · tsc **0** · **22** unit · contraste AA (2 temas) · e2e **99** passando (5 tema + 28 contraste + 30 axe completo + 14 overlays + 16 mobile + 4 export + 2 landing) (ver ACTION-PLAN §2) · build `não verificado` |
+| **Histórico git** | 6 commits: `base` (original) → `feat(theme)…` → `chore(theme): pin…` → `test(theme): …N1 partial` → `test(theme): stabilize axe-full…` → `test(theme): cover mobile, export, landing…`. (O hash original `ebf4d7f` não existe aqui; a base foi reconstruída do zip original e o diff é equivalente.) |
 | **Próximo passo** | Ver **ACTION-PLAN §1 (painel)**. |
 
 > **Nota de processo (lição desta sessão):** o upload anterior veio com o zip *errado* (o original, sem docs/patch/histórico) e a sessão perdeu tempo. Agora tudo vive em **um único** `CONTENT-OS-SESSION-PACK.zip` com `verify-pack.sh`; o Passo 0 do prompt **para** se a verificação falhar.
@@ -64,10 +64,28 @@
 | `e2e/overlays.spec.ts`: Modal, Dropdown, Select, Tooltip, Toast, drag Kanban × 2 temas | 12/12 passando (isolado) |
 | `playwright.config.ts`: `timeout 60s`, `expect.timeout 20s` | só mitiga compilação sob demanda do `next dev` |
 
+### Sessão de conclusão do N1 — 07/10/2026
+
+| Entrega | Evidência |
+|---|---|
+| Projeto Playwright `mobile` (Pixel 7) + `e2e/mobile.spec.ts` | 16/16: 7 rotas × 2 temas (overflow, axe, contraste) + MobileNav aberta |
+| `e2e/export.spec.ts` (L9) | 4/4; arquivos revisados **visualmente** (PNG claro, PDF claro, PDF escuro) |
+| `e2e/landing.spec.ts` (L15) | 2/2; 9 seções × 2 temas **vistas**; achou e corrigiu A8 (`CalendarShowcase`) |
+| drag do Calendar em `overlays.spec.ts` (L7) | 2/2 (card fantasma excluído, como no Kanban — A5) |
+| `scripts/e2e-sandbox.sh` | servidor + aquecimento + e2e num script; status em `/tmp/e2e-status` |
+
 ## 3. O que NÃO foi feito (resumo — detalhe e IDs em ACTION-PLAN §3)
 
 | Item | Por quê | Onde |
 |---|---|---|
+| `next build` (L1), CI real (L2), Safari/iOS/Firefox (L5), fonte Geist real | sandbox sem Google Fonts/CI/outros navegadores | você: N0/N4 |
+| Gate visual (L10) | baselines exigem a fonte real, geradas no CI Linux | N2 (exige N0) |
+| Lint `rgb()/hsl()/oklch()`, hex 3/8 dígitos, `bg-[#…]` (L12); `/dev/theme` (L13); sem transição na troca (L14) | não feito | **N3 (próximo)** |
+| Regras de tema em README/CONTRIBUTING (L19); otimizar `midialogo.png` (L18) | não feito | N5 |
+| Decisão do dono: atalho de teclado (L16), sync entre dispositivos (L17) | exige decisão | N5 |
+| A9 (PDF 17 MB) e A10 (margem branca no PDF escuro) | fora do escopo do tema; decisão sua | ACTION-PLAN §8 |
+
+---|---|---|
 | `next build` (L1), CI real (L2), Safari/iOS/Firefox (L5), fonte Geist real | sandbox sem Google Fonts/CI/outros navegadores | você: N0/N4 |
 | Gate visual (L10) | baselines exigem a fonte real, geradas no CI Linux | N2 (exige N0) |
 | Viewport mobile + `MobileNav` (L8) | não feito | N1 |
@@ -119,7 +137,7 @@ Regra de uso: **nunca** `dark:`, `white`, `black` nem hex em componente — o ES
 | R8 | hex em TSX → paleta movida para `src/lib/constants/avatar-colors.ts`; Avatar sem `color` usa `bg-primary` |
 
 ### Arquivos novos / relevantes
-`src/lib/theme/{constants,resolve,init-script,theme-store}.ts` (+ `*.test.ts`) · `src/hooks/use-theme.ts` · `src/components/layout/{ThemeSync,ThemeToggle}.tsx` · `src/lib/utils/color.ts` (+ teste) · `src/lib/constants/avatar-colors.ts` · `scripts/check-contrast.mjs` · `vitest.config.ts` · `playwright.config.ts` · `e2e/{theme,a11y,a11y-full,overlays}.spec.ts` + `e2e/helpers.ts` · `.github/workflows/ci.yml` · `docs/*`. (`theme-system.patch` acompanha o zip, fora da árvore git.)
+`src/lib/theme/{constants,resolve,init-script,theme-store}.ts` (+ `*.test.ts`) · `src/hooks/use-theme.ts` · `src/components/layout/{ThemeSync,ThemeToggle}.tsx` · `src/lib/utils/color.ts` (+ teste) · `src/lib/constants/avatar-colors.ts` · `scripts/check-contrast.mjs` · `vitest.config.ts` · `playwright.config.ts` · `e2e/{theme,a11y,a11y-full,overlays,mobile,export,landing}.spec.ts` + `e2e/helpers.ts` · `scripts/e2e-sandbox.sh` · `.github/workflows/ci.yml` · `docs/*`. (`theme-system.patch` acompanha o zip, fora da árvore git.)
 
 ---
 
@@ -214,3 +232,13 @@ Saída: (1) o que você fez com evidência (comando + resultado), (2) o que fico
 no ACTION-PLAN e HANDOFF §1/§3 reescritos se o estado mudou.
 Antes de encerrar: confirme que cada critério de aceite da sessão foi checado por comando.
 ```
+
+---
+
+## 9. Armadilhas novas (sessão de conclusão do N1)
+
+17. **Processos em background morrem entre turnos** (dev server e e2e). Use `scripts/e2e-sandbox.sh` e só confie em `/tmp/e2e-status` = `DONE exit=…`. Log parado sem `DONE` = reiniciar.
+18. **`sh` do sandbox**: não existe `${PIPESTATUS[0]}`; use `$?` em comandos separados.
+19. **Playwright apaga `test-results/`** a cada execução: copie exports/capturas para `/tmp` antes de reexecutar.
+20. **Tempo da sessão é finito**: faça commit + docs + pack **antes** da suíte longa (ordem A–F do NEXT-SESSION-PROMPT).
+21. **PDFs claro e escuro têm exatamente o mesmo tamanho** (jsPDF grava pixels sem compressão): não é bug de tema; confirme com `cmp`/`md5sum`.

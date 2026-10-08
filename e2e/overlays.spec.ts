@@ -75,5 +75,21 @@ for (const theme of THEMES) {
       await contrast(page, "[aria-roledescription='draggable'], [class*='shadow-(--shadow-elevated)']");
       await page.mouse.up();
     });
+
+    test("Overlay de arrastar (Calendar)", async ({ page }) => {
+      test.setTimeout(60_000);
+      await page.goto("/calendar");
+      await waitHydrated(page);
+      const card = page.locator("[aria-roledescription='draggable']").first();
+      await expect(card).toBeVisible();
+      const box = (await card.boundingBox())!;
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(box.x + box.width / 2 + 20, box.y + box.height / 2 + 10, { steps: 6 });
+      await page.mouse.move(box.x + box.width / 2 + 140, box.y + box.height / 2 + 10, { steps: 8 });
+      // Mesmo achado A5 do Kanban: card fantasma com opacidade reduzida fica fora da varredura.
+      await contrast(page, "[aria-roledescription='draggable'], [class*='shadow-(--shadow-elevated)']");
+      await page.mouse.up();
+    });
   });
 }

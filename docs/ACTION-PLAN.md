@@ -1,7 +1,7 @@
 # ACTION PLAN CONTÍNUO — Sistema de Temas do Content OS
 
 > Documento **vivo**: ao fim de cada sessão, atualize a seção 8 (log) e marque os itens do backlog.
-> Estado atual e contexto: [`HANDOFF.md`](./HANDOFF.md). Última atualização: **07/10/2026**.
+> Estado atual e contexto: [`HANDOFF.md`](./HANDOFF.md). Última atualização: **07/10/2026 (fim da sessão N1)**.
 
 ---
 
@@ -13,7 +13,7 @@
 |---|---|---|---|
 | S0–S9 | Implementação do sistema de temas | ✅ concluída | — |
 | N0 | Build, CI, pins, QA no ambiente real | ⚠️ parcial: **L3, L4 ✅**; **L1, L2, L5 ⬜** | **você** (máquina real/CI) |
-| N1 | Cobertura de testes | ⚠️ parcial: **L6, L11 ✅**, L7 parcial; **L8, L9, L15 ⬜** | sandbox |
+| N1 | Cobertura de testes | ✅ **concluída no sandbox**: L6, L7, L8, L9, L11, L15 ✅ | — |
 | N2 | Gate de regressão visual (L10) | ⬜ | você/CI (precisa da fonte Geist real e de N0) |
 | N3 | Lint mais duro, `/dev/theme`, sem transição na troca (L12–L14) | ⬜ | sandbox |
 | N4 | QA manual multi-navegador (L5) | ⬜ | **você** |
@@ -21,11 +21,11 @@
 
 ### 1.2 PRÓXIMO PASSO (ordem recomendada)
 
-1. **Você (em paralelo, ~45 min):** N0 — `npm run build`, abrir PR e ver o CI, abrir o app com Geist real nos 2 temas. Cole os logs na próxima sessão.
-2. **Sessão (sandbox):** N1 restante → **mobile** (L8), **PDF/PNG no claro** (L9), **landing por seção** (L15), **drag do Calendar** (L7). Um commit `test(theme): … mobile and export`.
-3. **Sessão (sandbox):** N3 (L12–L14). Um commit.
-4. **Sessão (sandbox):** N5 parcial (L18, L19; L16 só se você decidir). Um commit.
-5. **Depois do N0 verde:** N2 (baselines no CI) e N4 (QA manual).
+1. **Você (em paralelo, ~45 min):** N0 — `npm run build`, abrir PR e ver o CI, abrir o app com Geist real nos 2 temas. Cole os logs na próxima sessão (N0/N2/N4 só você fecha).
+2. **Sessão (sandbox):** **N3** — L12 (lint mais duro), L13 (`/dev/theme`), L14 (sem transição na troca). Um commit `feat(theme): stricter color lint, dev showcase, transition suppression`.
+3. **Sessão (sandbox):** **N5 parcial** — L18 (`midialogo.png`), L19 (regras em README/CONTRIBUTING); L16 só se você decidir "sim". Um commit.
+4. **Depois do N0 verde:** N2 (baselines visuais no CI) e N4 (QA manual Safari/iOS/Firefox).
+5. **Achados A9/A10 (PDF de 17 MB, margem branca no PDF escuro):** decisão sua se viram item (hoje fora do escopo do tema).
 
 **Fora do alcance do sandbox (sempre “não verificado” aqui):** `next build` com Google Fonts, CI real, Safari/iOS/Firefox, fonte Geist, baselines visuais.
 
@@ -45,12 +45,12 @@ npm run lint          # 0 problemas (regra de cor em "error")
 npm run typecheck     # next typegen && tsc --noEmit
 npm test              # Vitest — baseline: 22 passando
 npm run contrast      # AA nos dois temas
-npm run e2e           # Playwright + axe — baseline: **75** passando (5 tema + 28 contraste + 30 axe completo + 12 overlays) (sandbox: aqueça rotas, --workers=2, em background)
+npm run e2e           # Playwright + axe — baseline: **99** passando (5 tema + 28 contraste + 30 axe completo + 14 overlays + 16 mobile + 4 export + 2 landing) (sandbox: use scripts/e2e-sandbox.sh)
 npm run build         # ⚠️ nunca rodou no sandbox (fontes) — N0
 ```
-**Baseline atual (07/10/2026):** lint 0 · tsc 0 · 22 unit · contraste ✅ · e2e **75** passando (5 tema + 28 contraste + 30 axe completo + 12 overlays) · build `não verificado`.
+**Baseline atual (07/10/2026):** lint 0 · tsc 0 · 22 unit · contraste ✅ · e2e **99** passando (5 tema + 28 contraste + 30 axe completo + 14 overlays + 16 mobile + 4 export + 2 landing; projetos `chromium` e `mobile`) · build `não verificado`.
 
-**Rodar e2e no sandbox (receita):** (1) `setsid nohup npm run dev -- -p 3100 > /tmp/dev.log 2>&1 &`; (2) `curl` em todas as rotas para compilar; (3) `setsid nohup npx playwright test --workers=2 --reporter=line > /tmp/e2e.log 2>&1 &`; (4) consultar o log (comando único ≈300 s). Encerrar servidor por PID/porta, **nunca** `pkill -f`.
+**Rodar e2e no sandbox (receita, versão 3):** um único script em background — `rm -f /tmp/e2e-status; setsid nohup bash scripts/e2e-sandbox.sh > /tmp/run-all.out 2>&1 &`. Ele sobe o dev server, aquece as 15 rotas e roda `playwright test --workers=2`. **Só há resultado quando `/tmp/e2e-status` contém `DONE exit=…`** (log em `/tmp/e2e-full.log`). Sem `DONE` e com o log parado = o processo morreu (acontece entre turnos): reinicie, não conclua. O Playwright apaga `test-results/` a cada execução: copie exports/capturas para `/tmp` antes de reexecutar. Encerrar servidor por PID/porta, **nunca** `pkill -f`.
 
 ---
 
@@ -66,15 +66,15 @@ Legenda: **P0** bloqueia merge · **P1** necessário para considerar “concluí
 | L4 | P0 | ✅ `.nvmrc` + `engines` (Node ≥ 22.12) | N0 | arquivo presente; deploy usa Node ≥ 22.12 |
 | L5 | P1 | QA manual em Safari/iOS e Firefox | N0/N4 | checklist da seção 4-N4 sem falhas |
 | L6 | P1 | ✅ Cobrir rotas dinâmicas e públicas nos 2 temas | N1 | e2e/axe incluem `/content/[id]`, `/clients/[id]`, `/campaigns/[id]`, `/review/…`, 404 |
-| L7 | P1 | ✅ (parcial: Modal, Dropdown, Select, Tooltip, Toast, drag Kanban; falta drag do Calendar) Cobrir estados abertos: Modal, Select, Dropdown, Tooltip, Toast, drag overlay (Kanban/Calendar) | N1 | axe roda com cada overlay aberto, 2 temas |
-| L8 | P1 | ⬜ Viewport mobile + `MobileNav` | N1 | e2e em 390×844, 2 temas, sem violações |
-| L9 | P1 | ⬜ Exportação **PDF** e PNG no claro | N1 | arquivo gerado; fundo e texto legíveis (verificação visual registrada) |
+| L7 | P1 | ✅ Cobrir estados abertos: Modal, Select, Dropdown, Tooltip, Toast, drag overlay (Kanban/Calendar) | N1 | axe roda com cada overlay aberto, 2 temas |
+| L8 | P1 | ✅ Viewport mobile + `MobileNav` | N1 | e2e `mobile` (Pixel 7), 7 rotas + MobileNav × 2 temas, sem overflow e sem violações |
+| L9 | P1 | ✅ Exportação **PDF** e PNG no claro (e escuro) | N1 | arquivo gerado; fundo e texto legíveis (verificação visual registrada) |
 | L10 | P1 | Gate de regressão visual (D9) com fonte real | N2 | `toHaveScreenshot` no repo, baselines escuro+claro, relógio congelado |
 | L11 | P2 | ✅ axe completo (não só `color-contrast`) | N1 | regras `wcag2a/2aa` sem violações novas |
 | L12 | P2 | Lint: `rgb()/hsl()/oklch()`, hex de 3/8 dígitos, `bg-[#…]` | N3 | teste do lint com fixture que falha; 0 ocorrências hoje |
 | L13 | P2 | Página-vitrine `/dev/theme` (só em desenvolvimento) | N3 | lista todos os tokens e componentes nos 2 temas; 404 em produção |
 | L14 | P2 | Suprimir transições durante a troca de tema | N3 | sem “flash” de cor animada ao alternar (verificado em vídeo/trace) |
-| L15 | P2 | ⬜ Landing completa nos 2 temas (todas as seções, gradientes, logo) | N1 | screenshots revisados; sem contraste ruim |
+| L15 | P2 | ✅ Landing completa nos 2 temas (todas as seções, gradientes, logo) | N1 | screenshots revisados; sem contraste ruim |
 | L16 | P3 | Atalho de teclado para alternar tema | N5 | documentado + teste |
 | L17 | P3 | Sincronizar preferência entre dispositivos (exigiria mudar D4) | — | só com decisão explícita |
 | L18 | P3 | `midialogo.png` 1 MB exibido a 24–44 px | N5 | < 100 KB, transparente, ok nos 2 temas |
@@ -98,7 +98,7 @@ Cada sessão: **objetivo → passos → aceite → commit**. Tempo é estimativa
 **Aceite:** build verde; CI verde; `npm ls playwright-core` com 1 versão; nenhum erro de hidratação no console.
 **Commit:** `chore(theme): pin playwright, node engines; validate build and ci`
 
-### N1 — Ampliar cobertura (90–120 min) · fecha L6–L9, L11, L15
+### N1 — ✅ CONCLUÍDA (sandbox) · fecha L6–L9, L11, L15
 1. Ler `e2e/a11y.spec.ts`; extrair um helper `loginDemo(page, theme)` para reutilizar.
 2. Descobrir ids reais das rotas dinâmicas (dados de demo) e adicioná-las à lista de rotas, mais `/review/<id>` e uma rota inexistente (404).
 3. Novo `e2e/overlays.spec.ts`: para cada overlay (Modal de criação, Select, Dropdown do avatar, Tooltip, Toast, drag em Kanban/Calendar) abrir e rodar `AxeBuilder` — nos 2 temas.
@@ -197,6 +197,8 @@ Checklist manual (anotar ✅/❌ + navegador/versão no log):
 | 07/10/2026 | S0–S9 (plano original) | ✅ implementação completa | lint 0 · tsc 0 · 22 unit · contraste AA · 23 e2e · diff do escuro 0,01–1,16%/rota | build e CI não verificados; ver HANDOFF §3–§4 |
 | 07/10/2026 | N0 (parcial) | ⚠️ L3, L4 ✅; L1, L2, L5 **não verificados** (sandbox) | Passo 0: lint 0 · tsc 0 · 22 unit · contraste AA · 23 e2e (= baseline). `npm ls playwright-core` → 1 versão (1.56.1). `.nvmrc`=22, `engines.node`=">=22.12". `npm run build` falha **só** por Google Fonts inacessível (Geist/Geist Mono) | **Rodar no ambiente real:** `npm run build`, PR com CI (`quality`,`e2e`), abrir com Geist real nos 2 temas. Só então marcar N0 ✅. Achado: `npm run build` aqui nunca passa sem rede p/ fonts; considerar `next/font/local` (fora do escopo) |
 | 07/10/2026 | N1 (parcial) | ⚠️ L6, L11 ✅; L7 parcial; **L8, L9, L15 não feitos** | e2e/helpers.ts, a11y.spec (+5 rotas dinâmicas/404), a11y-full.spec (wcag2a/2aa, 15 rotas × 2 temas), overlays.spec (6 overlays × 2 temas). Rodados: overlays 12/12 ✅; a11y-full nas 4 rotas com allow-list 10/10 ✅; lint 0 · tsc 0 · 22 unit. **Suíte completa: 75 testes — 1 execução cheia (72 ✅; 2 falhas eram SIGKILL de um processo duplicado meu; 1 falso positivo de contraste na landing/claro dentro do axe completo, intermitente por animação) + reexecução dos 15 testes `tema light` do axe completo ✅ após remover `color-contrast` dele (contraste segue em a11y.spec). Não houve uma 2ª execução cheia única depois da edição final** | **Achados (fora do tema, idênticos nos 2 temas, em KNOWN):** 3 SelectTrigger sem nome em /content e /calendar (button-name); /calendar Select de mês com aria-controls inválido; /settings input sem label; /content/[id] botão de ícone sem aria-label. **Achado de contraste:** card fantasma do Kanban usa `opacity-40` (≈1,8–2,2:1), excluído da varredura só durante o arrasto. Pendente N1: mobile (Pixel 7 + MobileNav), PDF/PNG claro, landing por seção, drag do Calendar |
+| 07/10/2026 | N1 (conclusão) | ✅ L7, L8, L9, L15 fechados (L6, L11 já ✅) | Passo 0 = baseline (75 e2e). Novos specs: `mobile.spec.ts` (16/16 ✅), `export.spec.ts` (4/4 ✅; PNG claro, PDF claro e PDF escuro **vistos**), `landing.spec.ts` (2/2 ✅ após correção; 9 seções × 2 temas **vistas**), `overlays.spec.ts` + drag do Calendar (2/2 ✅). Config: projeto `mobile` (Pixel 7). Correção: `CalendarShowcase.tsx` L38 `text-muted-foreground/60`→`text-muted-foreground`. lint 0 · tsc 0 · 22 unit · contraste AA. Suíte completa: ver linha “e2e completo” abaixo | **A8** (corrigido): números dos dias na landing com 3,42:1 (escuro) e 2,59:1 (claro). **A9:** PDF exportado ≈17 MB por 1 página (jsPDF sem compressão) — fora do tema. **A10:** PDF escuro sai com margem de página branca (A4) — decisão de design. **Armadilhas novas:** processos em background morrem entre turnos; `sh` sem `PIPESTATUS`; Playwright apaga `test-results/` |
+| 07/10/2026 | e2e completo (N1) | ✅ 99/99 passando | `bash scripts/e2e-sandbox.sh` → `/tmp/e2e-status` = `DONE exit=0`; “99 passed (12.8m)”; projetos chromium (83) + mobile (16). 1ª tentativa morreu em 92/99 (processo encerrado entre turnos) e foi **descartada**; vale a 2ª execução completa | |
 | — | N2 | ⬜ | | |
 | — | N3 | ⬜ | | |
 | — | N4 | ⬜ | | |
@@ -213,3 +215,6 @@ Checklist manual (anotar ✅/❌ + navegador/versão no log):
 | A5 | Kanban (arrasto) | card fantasma com `opacity-40`: contraste ≈1,8–2,2:1 (transitório) | decisão de design: reduzir menos a opacidade |
 | A6 | landing `/` no claro | axe completo viu contraste baixo em 3 nós **durante a animação de entrada** (intermitente) | confirmar em L15 com revisão visual estática; considerar reduced motion no framer-motion |
 | A7 | e2e em dev server | compilação sob demanda causa timeouts a frio | manter timeout 60 s; CI usa build+start |
+| A8 | landing `/` (CalendarShowcase L38) | ✅ **corrigido**: `text-muted-foreground/60` em texto de 10px (3,42:1 escuro / 2,59:1 claro) | já aplicado: cor cheia do token (AA validado em check-contrast) |
+| A9 | `src/lib/utils/export.ts` | PDF de 1 página pesa ≈17 MB (PNG embutido sem compressão no jsPDF) | passar `compress: true` no `jsPDF` ou usar JPEG; decisão sua |
+| A10 | exportação PDF no escuro | conteúdo escuro sobre página A4 branca (margem 8 mm) | decisão de design: pintar a página com o fundo do tema |

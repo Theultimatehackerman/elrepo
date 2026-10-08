@@ -35,7 +35,7 @@ export function CalendarShowcase() {
                   key={i}
                   className="flex aspect-square flex-col gap-1 border-b border-r border-border p-1.5 last:border-r-0 [&:nth-child(7n)]:border-r-0"
                 >
-                  <span className="text-[10px] text-muted-foreground/60">{i + 1}</span>
+                  <span className="text-[10px] text-muted-foreground">{i + 1}</span>
                   {FILLED_CELLS.has(i) && (
                     <div
                       className="h-3 flex-1 rounded-xs"
