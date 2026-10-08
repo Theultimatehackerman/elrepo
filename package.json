@@ -11,7 +11,9 @@
     "test": "vitest run",
     "contrast": "node scripts/check-contrast.mjs",
     "e2e": "playwright test",
-    "e2e:theme": "playwright test e2e/theme.spec.ts"
+    "e2e:theme": "playwright test e2e/theme.spec.ts",
+    "e2e:visual": "VISUAL=1 playwright test --project=visual",
+    "e2e:visual:update": "VISUAL=1 playwright test --project=visual --update-snapshots"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

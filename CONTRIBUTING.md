@@ -60,6 +60,14 @@ npm run e2e                       # Playwright + axe, nos 2 temas, desktop e mob
   `waitMotionSettled(page)` depois (ambos em `e2e/helpers.ts`).
 - Mudou visual? Veja a tela **nos dois temas** antes de pedir revisão.
 
+## Gate visual (L10) — baselines só do CI/Linux
+
+- `e2e/visual.spec.ts` (13 rotas × 2 temas, viewport 1366×850, relógio congelado) roda no projeto `visual`, ativado por `VISUAL=1`
+  (`npm run e2e:visual`). `npm run e2e` não o enxerga.
+- **Nunca gere baselines em macOS/Windows** (antialiasing difere e dá falso diff). Gere no GitHub: Actions → **Visual baselines** → Run workflow;
+  baixe o artifact `visual-baselines`, extraia em `e2e/visual.spec.ts-snapshots/` e commite **com revisão humana** (só em PR de design).
+- O job `visual` do `ci.yml` só roda quando essas baselines existem (`hashFiles`). Falhou? baixe o artifact `visual-diff`.
+
 ## Acessibilidade (o axe é gate: `KNOWN` está vazio)
 
 - Botão só com ícone e `SelectTrigger` **precisam de `aria-label`**.

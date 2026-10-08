@@ -1,0 +1,18 @@
+name: Visual baselines
+# Gera/atualiza as baselines do gate visual (L10) no Linux do CI, com a fonte real (Geist).
+# Rode manualmente: Actions → "Visual baselines" → Run workflow (na branch do PR de design).
+# Depois baixe o artifact "visual-baselines", extraia em e2e/visual.spec.ts-snapshots/ e commite (com revisão humana).
+on: workflow_dispatch
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test --project=visual --update-snapshots
+        env: { CI: "true", VISUAL: "1" }
+      - uses: actions/upload-artifact@v4
+        with: { name: visual-baselines, path: e2e/visual.spec.ts-snapshots/ }

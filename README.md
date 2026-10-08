@@ -139,6 +139,6 @@ Feito por [Lázaro Vasconcelos](mailto:lazaro.vasconcelos@sollydus.com.br).
 
 - Alternar: ícone no topo do app/landing/login, ou Settings → Preferências. Padrão: escuro.
 - Tokens: `src/app/globals.css` (`@theme static` + `[data-theme="light"]`). Não use `dark:`, `white`/`black`, hex nem `rgb()/hsl()/oklch()` em componentes (o lint bloqueia). **Regras completas, como adicionar uma cor e o checklist de PR: [`CONTRIBUTING.md`](./CONTRIBUTING.md).**
-- Vitrine de tokens e componentes (só em `npm run dev`): `/dev/theme`. Atalho: **Alt+Shift+T** alterna claro↔escuro.
+- Vitrine de tokens e componentes (só em `npm run dev`): `/dev/theme`. Atalho: **Alt+Shift+T** alterna claro↔escuro. Gate visual e como atualizar baselines: ver `CONTRIBUTING.md`.
 - Motor: `src/lib/theme/*`, `src/hooks/use-theme.ts`. Decisões: `docs/adr/0001-theme-system.md`.
 - Qualidade: `npm run lint · typecheck · test · contrast · e2e` (1ª vez do e2e: `npx playwright install chromium`).

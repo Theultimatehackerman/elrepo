@@ -16,8 +16,12 @@ export default defineConfig({
     contextOptions: { reducedMotion: "reduce" },
   },
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] }, testIgnore: /mobile\.spec\.ts/ },
+    { name: "chromium", use: { ...devices["Desktop Chrome"] }, testIgnore: /(mobile|visual)\.spec\.ts/ },
     { name: "mobile", use: { ...devices["Pixel 7"] }, testMatch: /mobile\.spec\.ts/ },
+    // L10: só com VISUAL=1 (baselines do CI/Linux). Fora disso `npm run e2e` não o enxerga.
+    ...(process.env.VISUAL
+      ? [{ name: "visual", use: { ...devices["Desktop Chrome"], viewport: { width: 1366, height: 850 } }, testMatch: /visual\.spec\.ts/ }]
+      : []),
   ],
   webServer: {
     command: process.env.CI ? `npm run build && npm run start -- -p ${PORT}` : `npm run dev -- -p ${PORT}`,
