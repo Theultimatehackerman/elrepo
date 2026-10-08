@@ -12,9 +12,9 @@
 | Sessão | Escopo | Estado | Quem consegue fechar |
 |---|---|---|---|
 | S0–S9 | Implementação do sistema de temas | ✅ concluída | — |
-| N0 | Build, CI, pins, QA no ambiente real | ⚠️ parcial: **L3, L4 ✅**; **L1, L2, L5 ⬜** | **você** (máquina real/CI) |
+| N0 | Build, CI, pins, QA no ambiente real | ⚠️ parcial: **L3, L4 ✅**; **L1, L2, L5 ⬜** | **você** (máquina real/CI) · **no sandbox (08/10): build webpack+fontes mockadas ✅, `next start` ✅, e2e modo-CI ✅, hidratação ✅** — falta o build real (Turbopack + Geist) e o CI real |
 | N1 | Cobertura de testes | ✅ **concluída no sandbox**: L6, L7, L8, L9, L11, L15 ✅ | — |
-| N2 | Gate de regressão visual (L10) | ⬜ | você/CI (precisa da fonte Geist real e de N0) |
+| N2 | Gate de regressão visual (L10) | ⬜ | você/CI (precisa da fonte Geist real e de N0) **parcial**: spec + projeto `visual` + job + workflow prontos (26/26 ×3 com baselines locais descartáveis); faltam baselines do CI (Geist) e a prova por mutação |
 | N3 | Lint mais duro, `/dev/theme`, sem transição na troca (L12–L14) | ✅ **concluída no sandbox** (L12, L13, L14 ✅; 404 de `/dev/theme` em `next build && next start` **não verificado**) | — |
 | N4 | QA manual multi-navegador (L5) | ⬜ | **você** |
 | N5 | Polimento e fechamento (L16, L18, L19) | ✅ **concluída no sandbox**: **L16, L18, L19 ✅**. Falta só o fechamento do ADR/DoD (§6), que depende de N0/N4 | você (após N0/N4) |
@@ -24,6 +24,7 @@
 
 1. **Você (em paralelo, ~45 min):** N0 — `npm run build`, abrir PR e ver o CI, abrir o app com Geist real nos 2 temas. Cole os logs na próxima sessão (N0/N2/N4 só você fecha).
 2. ✅ **N3 feita** (commit `feat(theme): stricter color lint, dev showcase, transition suppression`). No `next build && next start` confira que `/dev/theme` dá 404 (só você consegue).
+0. **Para você (≈1–2 h), tudo pronto em `PENDENCIAS-KIT/`:** `LEIA-ME.md` → N0 (`n0-collect.sh`), N4 (QA), decisões (A5/A6/L17), N2 (baselines no CI). Depois cole os resultados na próxima sessão.
 3. ✅ **N5 feita no sandbox** (L16 atalho, L18 logo, L19 `CONTRIBUTING.md`) e os achados **A1–A4, A9, A10** corrigidos (decisões padrão registradas no §8). **Não há mais item de tema que o sandbox consiga fechar**: a próxima sessão deve rodar o Passo 0, dizer isso e parar, salvo se você mandar A5/A6 ou algo novo.
 4. **Depois do N0 verde:** N2 (baselines visuais no CI) e N4 (QA manual Safari/iOS/Firefox); então o fechamento do N5 (ADR "implementado", Definition of Done §6).
 5. **Decisões que tomei por você (reverta se discordar):** L16 = `Alt+Shift+T` alterna claro↔escuro ("Sistema" só pelo menu); A10 = a folha do PDF segue o fundo do tema; A9 = `compress` do jsPDF (PDF 17 MB → 0,4 MB). **Ainda abertos:** A5 (opacidade do card fantasma do Kanban) e A6 (`MotionConfig reducedMotion`).
@@ -61,8 +62,8 @@ Legenda: **P0** bloqueia merge · **P1** necessário para considerar “concluí
 
 | ID | Pri | Item | Sessão | Aceite (verificável) |
 |---|---|---|---|---|
-| L1 | P0 | `next build` verde | N0 | `npm run build` sai com 0; sem warning de hidratação no console |
-| L2 | P0 | CI executa e passa | N0 | jobs `quality` e `e2e` verdes num PR |
+| L1 | P0 | `next build` verde | N0 | `npm run build` sai com 0; sem warning de hidratação no console → **parcial**: build `--webpack` + fontes mockadas verde; falta o real (Turbopack + Geist) |
+| L2 | P0 | CI executa e passa | N0 | jobs `quality` e `e2e` verdes num PR → **parcial**: e2e em modo CI (build+start, `CI=1`) verde no sandbox (103 passed + 5 skipped); falta o CI real |
 | L3 | P0 | ✅ Fixar Playwright (`@playwright/test` exato = `playwright-core`) | N0 | `npm ls playwright-core` mostra 1 versão |
 | L4 | P0 | ✅ `.nvmrc` + `engines` (Node ≥ 22.12) | N0 | arquivo presente; deploy usa Node ≥ 22.12 |
 | L5 | P1 | QA manual em Safari/iOS e Firefox | N0/N4 | checklist da seção 4-N4 sem falhas |
@@ -70,7 +71,7 @@ Legenda: **P0** bloqueia merge · **P1** necessário para considerar “concluí
 | L7 | P1 | ✅ Cobrir estados abertos: Modal, Select, Dropdown, Tooltip, Toast, drag overlay (Kanban/Calendar) | N1 | axe roda com cada overlay aberto, 2 temas |
 | L8 | P1 | ✅ Viewport mobile + `MobileNav` | N1 | e2e `mobile` (Pixel 7), 7 rotas + MobileNav × 2 temas, sem overflow e sem violações |
 | L9 | P1 | ✅ Exportação **PDF** e PNG no claro (e escuro) | N1 | arquivo gerado; fundo e texto legíveis (verificação visual registrada) |
-| L10 | P1 | Gate de regressão visual (D9) com fonte real | N2 | `toHaveScreenshot` no repo, baselines escuro+claro, relógio congelado |
+| L10 | P1 | Gate de regressão visual (D9) com fonte real | N2 | `toHaveScreenshot` no repo, baselines escuro+claro, relógio congelado → **parcial**: ver N2 |
 | L11 | P2 | ✅ axe completo (não só `color-contrast`) | N1 | regras `wcag2a/2aa` sem violações novas |
 | L12 | P2 | ✅ Lint: `rgb()/hsl()/oklch()`, hex de 3/8 dígitos, `bg-[#…]` | N3 | teste do lint com fixture que falha; 0 ocorrências hoje |
 | L13 | P2 | ✅ Página-vitrine `/dev/theme` (só em desenvolvimento) | N3 | lista todos os tokens e componentes nos 2 temas; 404 em produção |
@@ -208,6 +209,7 @@ Checklist manual (anotar ✅/❌ + navegador/versão no log):
 | 07/10/2026 | e2e completo (N5 parcial) | ✅ 104 passed + 1 skipped, `exit=0` | `bash scripts/e2e-sandbox.sh` sobre o commit final → `/tmp/e2e-status` = `DONE exit=0`; “104 passed (9.0m)”, “1 skipped” (= `em produção /dev/theme dá 404`, só com `CI=1`). Sem falhas, inclusive `dev-theme › L14` (A11 corrigido). Duração 9,0 min (a N3 levou 5,1 min: varia com a carga do sandbox) | Continuam **não verificados** aqui: `next build`, 404 de `/dev/theme` em produção, CI real, Safari/iOS/Firefox, Geist real |
 | 08/10/2026 | N5 (completa no sandbox) + achados A1–A4, A9, A10 | ✅ L16 ✅; A1–A4 ✅; A9 ✅; A10 ✅; passo 4 do N5 (ADR/DoD) ⬜ (depende de N0/N4) | **Autorização:** você pediu “todo o plano”; tratei L16, A1–A4, A9, A10 como autorizados, com decisões padrão (ver §1.2 item 5). **Commits:** `fix(a11y)` (A1–A4) · `fix(export)` (A9, A10) · `feat(theme)` (L16) · docs. **A1–A4:** `KNOWN` esvaziado em `a11y-full` e `mobile`; axe wcag2a/2aa/21a/21aa passa nas 7+dinâmicas × 2 temas × (desktop, mobile): 42 + 4 passed; 1ª rodada achou A2 em outro lugar que o documentado (era o Tabs do calendário, não Select). **A9/A10:** PDF 17 MB → 416.030 B (escuro) / 418.279 B (claro); rasterizado e **visto** nos 2 temas; canto da folha `5,5,5` / `247,247,250`. Mutações: sem `compress` → falha por tamanho; sem o `fill` → falha por cor; restauradas. **L16:** `Alt+Shift+T` (`event.code`), ignora campos de texto/Ctrl/Meta/repeat; unit **36 → 49**; e2e 3 testes, 30/30 em `--repeat-each=10`; sem `<ThemeShortcut />` montado, 2 reprovam. Portões: lint 0 · tsc 0 · 49 unit · contraste AA | **Nenhum novo.** Corrigido o achado A2 (alvo real). Aberto: A5 (opacidade do card fantasma), A6 (`MotionConfig`). Atalho **não verificado** em Safari/iOS/Firefox (conflito com atalhos do navegador/SO) — incluir no QA da N4 |
 | 08/10/2026 | e2e completo (N5 completa) | ✅ 107 passed + 1 skipped, `exit=0` | `bash scripts/e2e-sandbox.sh` sobre o commit final → `DONE exit=0`; 108 listados (105 + 3 do atalho L16), “107 passed (10.9m)”, “1 skipped” (404 de `/dev/theme`, só com `CI=1`). Sem falhas, com `KNOWN` vazio no axe | Continuam **não verificados** aqui: `next build`, 404 de `/dev/theme` em produção, CI real, Safari/iOS/Firefox (incl. o atalho), Geist real |
+| 08/10/2026 | Verificações extras no sandbox + N2 parcial + kit de pendências | ✅ ver evidências | **Build:** `NEXT_FONT_GOOGLE_MOCKED_RESPONSES` + `next build --webpack` → exit 0, TypeScript ok, 15 páginas (o Turbopack real **não** aceita o mock). **`next start`:** rotas do app 200; `/dev/theme`, `/dev/theme/x`, rota inexistente → **404**. **e2e modo CI** (`CI=1` sobre `next start`, `scripts/sandbox/prod-e2e.sh`): **103 passed + 5 skipped, exit 0, 9,4 min** (5 skips = vitrine só em dev; o teste “em produção /dev/theme dá 404” **passou**). **Hidratação** (`hydration-check.mjs`, 14 rotas × 2 temas): 0 erros (só avisos da fonte falsa do mock). **N2:** `e2e/visual.spec.ts` (26 testes) + projeto `visual` (só `VISUAL=1`; `--list`: 108 padrão, 134 com `VISUAL=1`) + job `visual` (guardado por `hashFiles`) + workflow `Visual baselines`; baselines locais geradas e **26/26 em 3 execuções seguidas** (descartadas: fonte de fallback). **Kit:** `PENDENCIAS-KIT/` (N0 script, QA N4, decisões, fechamento) | **Não provado:** mutação do gate visual (mudar token ⇒ falha); `n0-collect.sh` só teve a sintaxe checada; contraste do A5 é estimativa. Continuam **não verificados**: Turbopack real, Geist real, CI real, Safari/iOS/Firefox |
 
 ### Achados acumulados (A1–A4, A8, A9, A10, A11 corrigidos; A5, A6, A7 seguem abertos)
 

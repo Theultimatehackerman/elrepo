@@ -13,7 +13,7 @@
 | **Objetivo** | Escuro (antes fixo) como tema de primeira classe: **Escuro · Claro · Sistema**, troca em tempo real, persistência, zero flash, WCAG AA. |
 | **Estado** | Implementação completa (S0–S9) + **N0 parcial** (pins) + **N1 concluída** + **N3 concluída** + **N5 concluída no sandbox** (L16 atalho `Alt+Shift+T`, L18 logo leve, L19 `CONTRIBUTING.md`) + achados **A1–A4, A9, A10 corrigidos**. Falta: validação no ambiente real (N0/N4), N2, fechamento do ADR/DoD e as decisões A5/A6/L17. |
 | **Pronto para merge?** | **Ainda não.** Abertos: **B1** `next build` e **B2** CI (nunca executados; só rodam na sua máquina). B3/B4 resolvidos. |
-| **Baseline (portões)** | lint **0** · tsc **0** · **49** unit · contraste AA (2 temas) · e2e **108 listados: 107 passam + 1 skip** (404 da vitrine, só roda no CI) — `DONE exit=0`, 10,9 min · build `não verificado`. |
+| **Baseline (portões)** | lint **0** · tsc **0** · **49** unit · contraste AA · e2e dev **108 listados: 107 passam + 1 skip** (10,9 min) · e2e modo CI no sandbox **103 passed + 5 skipped** (9,4 min) · build `--webpack` com fontes mockadas **ok** · build Turbopack/Geist reais, CI real: `não verificado`. |
 | **Histórico git** | `git log --oneline` (o hash original `ebf4d7f` não existe aqui; a base foi reconstruída do zip original e o diff é equivalente). Cadeia: `base` → `feat(theme)` → `chore(theme): pin` → `test(theme)` ×3 → `feat(theme): stricter color lint…` → `chore(theme): optimize logo, add CONTRIBUTING…` → `fix(a11y)…` → `fix(export)…` → `feat(theme): Alt+Shift+T…` → `docs`. Docs não repetem a contagem de commits (fica velha a cada commit). |
 | **Próximo passo** | Ver **ACTION-PLAN §1 (painel)**. |
 
@@ -100,6 +100,14 @@
 | A9/A10 (PDF) | 17 MB → ≈0,4 MB; folha com o fundo do tema (pixel do canto via `pdftoppm`); mutações reprovam |
 | L16 | `Alt+Shift+T`; 13 unit novos (49) + 3 e2e; mutação reprova |
 | Decisões tomadas por você | L16 alterna claro↔escuro; PDF segue o tema; ver ACTION-PLAN §1.2 item 5 |
+
+### Verificações extras e N2 parcial — 08/10/2026
+| Item | Evidência |
+|---|---|
+| Build | `next build --webpack` + fontes mockadas: exit 0, 15 páginas. Turbopack/Geist reais: **não verificados** |
+| Produção | `/dev/theme` 404; rotas do app 200; e2e modo CI **103 passed + 5 skipped**; hidratação 0 erros (14 rotas × 2 temas) |
+| N2 | spec + projeto `visual` + job + workflow no repo; 26/26 ×3 com baselines locais descartáveis; **baselines reais só do CI**; mutação não provada |
+| Kit | `PENDENCIAS-KIT/` na raiz do pack (para você, humano) |
 
 ## 3. O que NÃO foi feito (resumo — detalhe e IDs em ACTION-PLAN §3)
 
@@ -269,3 +277,7 @@ Antes de encerrar: confirme que cada critério de aceite da sessão foi checado 
 30. **A11y é gate**: `KNOWN` em `a11y-full`/`mobile` está **vazio**; qualquer violação nova reprova. Botão só com ícone e `SelectTrigger` precisam de `aria-label`; Radix Tabs sem `TabsContent` precisa de `aria-controls={undefined}` (ver CONTRIBUTING).
 31. **E2E parcial = `bash scripts/e2e-subset.sh <status> <log> <repeat> <specs…>`** (versionado; antes vivia em `/tmp` e se perdia). Teste novo ⇒ rode com `<repeat>`≥10 e **uma mutação** que o reprove (padrão usado em L14, A9, A10, L16).
 32. **Achado documentado ≠ verdade**: o A2 constava como "Select de mês" e era o Tabs do calendário. Confirme o alvo com o axe (nome do nó) antes de corrigir.
+33. **Build no sandbox (sem Google Fonts)**: `bash scripts/sandbox/build-mocked.sh` (`NEXT_FONT_GOOGLE_MOCKED_RESPONSES` + `--webpack`). O Turbopack não resolve o módulo interno de fonte nesse modo; logo o resultado vale para tipos/prerender/rotas, **não** para o bundle Turbopack nem para a Geist real.
+34. **e2e em modo CI no sandbox**: `bash scripts/sandbox/prod-e2e.sh` (precisa do build acima; usa `playwright.prod.config.ts`, `CI=1`, `next start` na 3100). Esperado: 103 passed + 5 skipped. Inclui o teste de 404 da vitrine, que na suíte de dev fica pulado.
+35. **Nunca `cut -c`/`head -c` em texto acentuado** ao imprimir (corta UTF-8 no meio e a ferramenta devolve "binary data" sem mostrar nada). Fatie em python ou use `iconv -f utf-8 -t ascii//TRANSLIT`.
+36. **Experimento ⇒ árvore suja ⇒ `build-pack.sh` recusa.** Faça experimentos em arquivos que você apagará/commitará antes do pack; confirme `git status --short` vazio.
