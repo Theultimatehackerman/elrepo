@@ -5,12 +5,7 @@ import { loginDemo, STATIC_ROUTES, THEMES, waitHydrated, waitMotionSettled } fro
 // Viewport Pixel 7 (412×915). Rotas autenticadas + MobileNav aberta, nos 2 temas.
 // `color-contrast` roda separado (axe completo dá falso positivo em animação, ver ACTION-PLAN A6).
 const ROUTES = STATIC_ROUTES.filter((r) => !["/", "/login", "/register"].includes(r));
-const KNOWN: Record<string, string> = {
-  "/content|button-name": "A1: SelectTrigger sem nome (pré-existente)",
-  "/calendar|button-name": "A1: SelectTrigger sem nome (pré-existente)",
-  "/calendar|aria-valid-attr-value": "A2: aria-controls inválido (pré-existente)",
-  "/settings|label": "A3: input sem label (pré-existente)",
-};
+const KNOWN: Record<string, string> = {};
 
 for (const theme of THEMES) {
   test.describe(`mobile — tema ${theme}`, () => {

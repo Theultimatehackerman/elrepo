@@ -162,20 +162,22 @@ export default function CalendarPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <ContentFilters value={filters} onChange={setFilters} />
         <Tabs value={view} onValueChange={(v) => setView(v as ViewMode)}>
+          {/* Sem <TabsContent>: as visões são renderizadas fora do Tabs, então o aria-controls padrão do Radix
+              apontaria para um id inexistente (aria-valid-attr-value, A2). */}
           <TabsList>
-            <TabsTrigger value="month">Mês</TabsTrigger>
-            <TabsTrigger value="week">Semana</TabsTrigger>
-            <TabsTrigger value="day">Dia</TabsTrigger>
+            <TabsTrigger value="month" aria-controls={undefined}>Mês</TabsTrigger>
+            <TabsTrigger value="week" aria-controls={undefined}>Semana</TabsTrigger>
+            <TabsTrigger value="day" aria-controls={undefined}>Dia</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" onClick={goPrev}>
+          <Button variant="ghost" size="icon" onClick={goPrev} aria-label="Período anterior">
             <ChevronLeft className="size-4" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={goNext}>
+          <Button variant="ghost" size="icon" onClick={goNext} aria-label="Próximo período">
             <ChevronRight className="size-4" />
           </Button>
           <Button variant="ghost" size="sm" onClick={goToday}>

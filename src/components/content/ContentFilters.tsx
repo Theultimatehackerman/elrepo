@@ -62,6 +62,7 @@ export function ContentFilters({ value, onChange }: ContentFiltersProps) {
         <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <input
           className={inputBaseClasses + " pl-9"}
+          aria-label="Buscar conteúdo"
           placeholder="Buscar por título, cliente, campanha..."
           value={value.search}
           onChange={(e) => set("search", e.target.value)}
@@ -69,7 +70,7 @@ export function ContentFilters({ value, onChange }: ContentFiltersProps) {
       </div>
 
       <Select value={value.clientId} onValueChange={(v) => set("clientId", v)}>
-        <SelectTrigger className="w-40"><SelectValue placeholder="Cliente" /></SelectTrigger>
+        <SelectTrigger className="w-40" aria-label="Filtrar por cliente"><SelectValue placeholder="Cliente" /></SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Todos os clientes</SelectItem>
           {clients.map((c) => (
@@ -79,7 +80,7 @@ export function ContentFilters({ value, onChange }: ContentFiltersProps) {
       </Select>
 
       <Select value={value.platform} onValueChange={(v) => set("platform", v)}>
-        <SelectTrigger className="w-40"><SelectValue placeholder="Plataforma" /></SelectTrigger>
+        <SelectTrigger className="w-40" aria-label="Filtrar por plataforma"><SelectValue placeholder="Plataforma" /></SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Todas as plataformas</SelectItem>
           {PLATFORMS.map((p) => (
@@ -89,7 +90,7 @@ export function ContentFilters({ value, onChange }: ContentFiltersProps) {
       </Select>
 
       <Select value={value.status} onValueChange={(v) => set("status", v)}>
-        <SelectTrigger className="w-40"><SelectValue placeholder="Status" /></SelectTrigger>
+        <SelectTrigger className="w-40" aria-label="Filtrar por status"><SelectValue placeholder="Status" /></SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Todos os status</SelectItem>
           {STATUS_ORDER.map((s) => (
@@ -99,7 +100,7 @@ export function ContentFilters({ value, onChange }: ContentFiltersProps) {
       </Select>
 
       <Select value={value.campaignId} onValueChange={(v) => set("campaignId", v)}>
-        <SelectTrigger className="w-40"><SelectValue placeholder="Campanha" /></SelectTrigger>
+        <SelectTrigger className="w-40" aria-label="Filtrar por campanha"><SelectValue placeholder="Campanha" /></SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Todas as campanhas</SelectItem>
           {campaigns.map((c) => (
@@ -109,7 +110,7 @@ export function ContentFilters({ value, onChange }: ContentFiltersProps) {
       </Select>
 
       <Select value={value.assigneeId} onValueChange={(v) => set("assigneeId", v)}>
-        <SelectTrigger className="w-40"><SelectValue placeholder="Responsável" /></SelectTrigger>
+        <SelectTrigger className="w-40" aria-label="Filtrar por responsável"><SelectValue placeholder="Responsável" /></SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Todos os responsáveis</SelectItem>
           {mockUsers.map((u) => (

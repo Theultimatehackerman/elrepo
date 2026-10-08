@@ -11,7 +11,8 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, label, error, id, ...props }, ref) => {
-    const inputId = id ?? props.name;
+    const generatedId = React.useId();
+    const inputId = id ?? props.name ?? generatedId; // sem isso o <label htmlFor> ficava sem alvo (A3)
     return (
       <div className="flex flex-col gap-1.5">
         {label && (
@@ -39,7 +40,8 @@ export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextArea
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, label, error, id, ...props }, ref) => {
-    const inputId = id ?? props.name;
+    const generatedId = React.useId();
+    const inputId = id ?? props.name ?? generatedId; // sem isso o <label htmlFor> ficava sem alvo (A3)
     return (
       <div className="flex flex-col gap-1.5">
         {label && (

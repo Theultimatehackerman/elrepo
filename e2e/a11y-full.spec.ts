@@ -7,13 +7,7 @@ import { DYNAMIC_ROUTES, loginDemo, STATIC_ROUTES, THEMES, waitHydrated } from "
 // Defeitos PRÉ-EXISTENTES, idênticos nos dois temas e sem relação com tema, ficam em KNOWN por
 // "rota|regra" com motivo (nunca por regra inteira). Cada um está listado em ACTION-PLAN §8 (Achados).
 // Corrigir um item aqui = remover a linha; o teste passa a exigir que ele continue limpo.
-const KNOWN: Record<string, string> = {
-  "/content|button-name": "3 SelectTrigger de filtro sem nome acessível (aria-label ausente)",
-  "/calendar|button-name": "3 SelectTrigger de filtro sem nome acessível (aria-label ausente)",
-  "/calendar|aria-valid-attr-value": "trigger do Select de mês aponta aria-controls para id inexistente (Radix fechado)",
-  "/settings|label": "input sem label associado",
-  "/content/content_1|button-name": "botão só com ícone (h-9 w-9) sem aria-label",
-};
+const KNOWN: Record<string, string> = {};
 
 for (const theme of THEMES) {
   test.describe(`axe wcag2a/2aa — tema ${theme}`, () => {

@@ -139,7 +139,7 @@ export default function ContentDetailPage() {
           <Button variant="outline" size="sm" onClick={() => setEditOpen(true)}>
             <Pencil className="size-3.5" /> Editar
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => setDeleteOpen(true)}>
+          <Button variant="ghost" size="icon" onClick={() => setDeleteOpen(true)} aria-label="Excluir conteúdo">
             <Trash2 className="size-4 text-danger" />
           </Button>
         </div>
