@@ -44,6 +44,7 @@ A lista completa e as razões de contraste ao vivo estão em **`/dev/theme`** (s
 - Estado no React: `useTheme()` (`src/hooks/use-theme.ts`), store externo em `src/lib/theme/theme-store.ts`.
   Não mova a chave para o `settings-store` sem rever o script do `<head>`.
 - A troca de tema desliga `transition` por ~50 ms (sem animar cores). Animações (`animation`) não são afetadas.
+- **Atalho `Alt+Shift+T`** (Option+Shift+T no Mac) alterna claro↔escuro a partir do tema que se vê; ignora campos de texto. "Sistema" só pelo menu. Lógica em `src/lib/theme/shortcut.ts`, montado por `ThemeShortcut` no layout raiz.
 - Exportação PNG/PDF do calendário segue o tema ativo.
 
 ## Antes de abrir um PR
@@ -59,7 +60,13 @@ npm run e2e                       # Playwright + axe, nos 2 temas, desktop e mob
   `waitMotionSettled(page)` depois (ambos em `e2e/helpers.ts`).
 - Mudou visual? Veja a tela **nos dois temas** antes de pedir revisão.
 
+## Acessibilidade (o axe é gate: `KNOWN` está vazio)
+
+- Botão só com ícone e `SelectTrigger` **precisam de `aria-label`**.
+- `Input`/`Textarea` com `label` já se associam sozinhos (`useId`); não passe `label` sem usar o componente.
+- Radix `Tabs` sem `TabsContent` (ex.: seletor de visão do calendário): `aria-controls={undefined}` nos gatilhos.
+
 ## Commits
 
-Um tema/assunto por commit, mensagem `tipo(escopo): resumo` (ex.: `feat(theme): …`, `fix(ui): …`), aplicação
+Um item lógico por commit, mensagem `tipo(escopo): resumo` (ex.: `feat(theme): …`, `fix(ui): …`), aplicação
 sempre funcionando entre commits.

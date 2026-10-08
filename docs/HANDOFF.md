@@ -11,10 +11,10 @@
 | | |
 |---|---|
 | **Objetivo** | Escuro (antes fixo) como tema de primeira classe: **Escuro · Claro · Sistema**, troca em tempo real, persistência, zero flash, WCAG AA. |
-| **Estado** | Implementação completa (S0–S9) + **N0 parcial** (pins) + **N1 concluída** + **N3 concluída no sandbox** + **N5 parcial** (L18 logo leve, L19 `CONTRIBUTING.md`). Falta: validação no ambiente real (N0/N4), N2, L16 (decisão sua) e o fechamento do N5 (ADR/DoD). |
+| **Estado** | Implementação completa (S0–S9) + **N0 parcial** (pins) + **N1 concluída** + **N3 concluída** + **N5 concluída no sandbox** (L16 atalho `Alt+Shift+T`, L18 logo leve, L19 `CONTRIBUTING.md`) + achados **A1–A4, A9, A10 corrigidos**. Falta: validação no ambiente real (N0/N4), N2, fechamento do ADR/DoD e as decisões A5/A6/L17. |
 | **Pronto para merge?** | **Ainda não.** Abertos: **B1** `next build` e **B2** CI (nunca executados; só rodam na sua máquina). B3/B4 resolvidos. |
-| **Baseline (portões)** | lint **0** · tsc **0** · **36** unit · contraste AA (2 temas) · e2e 105 listados (99 do Passo 0 + 6 de `dev-theme.spec.ts`): **104 passam + 1 skip** (teste de 404 da vitrine, só roda no CI) — suíte completa `DONE exit=0`, 9,0 min após a N5 parcial (ver ACTION-PLAN §2) · build `não verificado` |
-| **Histórico git** | 8 commits: `base` (original) → `feat(theme)…` → `chore(theme): pin…` → `test(theme): …N1 partial` → `test(theme): stabilize axe-full…` → `test(theme): cover mobile, export, landing…` → `feat(theme): stricter color lint, dev showcase, transition suppression` → `chore(theme): optimize logo, add CONTRIBUTING…` (N5 parcial). (O hash original `ebf4d7f` não existe aqui; a base foi reconstruída do zip original e o diff é equivalente.) |
+| **Baseline (portões)** | lint **0** · tsc **0** · **49** unit · contraste AA (2 temas) · e2e **108 listados: 107 passam + 1 skip** (404 da vitrine, só roda no CI) — `DONE exit=0`, 10,9 min · build `não verificado`. |
+| **Histórico git** | `git log --oneline` (o hash original `ebf4d7f` não existe aqui; a base foi reconstruída do zip original e o diff é equivalente). Cadeia: `base` → `feat(theme)` → `chore(theme): pin` → `test(theme)` ×3 → `feat(theme): stricter color lint…` → `chore(theme): optimize logo, add CONTRIBUTING…` → `fix(a11y)…` → `fix(export)…` → `feat(theme): Alt+Shift+T…` → `docs`. Docs não repetem a contagem de commits (fica velha a cada commit). |
 | **Próximo passo** | Ver **ACTION-PLAN §1 (painel)**. |
 
 > **Nota de processo (lição desta sessão):** o upload anterior veio com o zip *errado* (o original, sem docs/patch/histórico) e a sessão perdeu tempo. Agora tudo vive em **um único** `CONTENT-OS-SESSION-PACK.zip` com `verify-pack.sh`; o Passo 0 do prompt **para** se a verificação falhar.
@@ -92,13 +92,21 @@
 | A11 (teste L14 intermitente) | corrida do evento `storage` × listener do `ThemeSync`; corrigido **no teste**; 40/40 em `--repeat-each=40`; mutação ainda reprova |
 | e2e | Passo 0: 104 passed + 1 skipped (9,8 min). Suíte completa depois do commit: **104 passed + 1 skipped, `exit=0`, 9,0 min** (ACTION-PLAN §8) |
 
+### Sessão N5 completa — 08/10/2026
+
+| Entrega | Evidência |
+|---|---|
+| A1–A4 (a11y) | `KNOWN` vazio em `a11y-full` e `mobile`; axe wcag2a/2aa/21a/21aa passa. A3 corrigido na raiz (`Input`/`Textarea` com `useId`); A2 era o Tabs do calendário |
+| A9/A10 (PDF) | 17 MB → ≈0,4 MB; folha com o fundo do tema (pixel do canto via `pdftoppm`); mutações reprovam |
+| L16 | `Alt+Shift+T`; 13 unit novos (49) + 3 e2e; mutação reprova |
+| Decisões tomadas por você | L16 alterna claro↔escuro; PDF segue o tema; ver ACTION-PLAN §1.2 item 5 |
+
 ## 3. O que NÃO foi feito (resumo — detalhe e IDs em ACTION-PLAN §3)
 
 | Item | Por quê | Onde |
 |---|---|---|
 | `next build` (L1), CI real (L2), Safari/iOS/Firefox (L5), fonte Geist real | sandbox sem Google Fonts/CI/outros navegadores | você: N0/N4 |
 | Gate visual (L10) | baselines exigem a fonte real, geradas no CI Linux | N2 (exige N0) |
-| Atalho de teclado (L16) | exige decisão do dono | você decide; só então o sandbox implementa |
 | 404 de `/dev/theme` em `next build && next start` | só o guard foi testado (unit) | você: N0 |
 | Decisão do dono: sync entre dispositivos (L17) | exige decisão | N5 |
 | A9 (PDF 17 MB) e A10 (margem branca no PDF escuro) | fora do escopo do tema; decisão sua | ACTION-PLAN §8 |
@@ -257,3 +265,7 @@ Antes de encerrar: confirme que cada critério de aceite da sessão foi checado 
 26. **PDFs claro e escuro têm exatamente o mesmo tamanho** (jsPDF grava pixels sem compressão): não é bug de tema; confirme com `cmp`/`md5sum`.
 27. **Teste que dispara `StorageEvent` sintético** (L14, A11): o `ThemeSync` só registra o listener num efeito *depois* de hidratar; `waitHydrated` não garante isso e o evento é ignorado em silêncio (falhou 3/20 e 9/20). Antes de medir, prove o listener com ida e volta via `expect.poll` (ver `e2e/dev-theme.spec.ts`).
 28. **Orçamento de sessão**: a N5 parcial fechou a tarefa e *não* fechou o pack porque a investigação de uma flakiness fora do escopo (controle, repetições, mutação, capturas) consumiu o tempo. Use `bash build-pack.sh` (raiz do pack) logo após o commit; investigue no máximo 1 controle + 1 correção por falha alheia.
+29. **Teste de atalho de teclado** (L16): como o listener só existe após hidratar, repita a tecla até a troca acontecer (`pressShortcutUntil` em `e2e/theme.spec.ts`); cada tecla é tratada na hora ou nunca, então não há dupla troca.
+30. **A11y é gate**: `KNOWN` em `a11y-full`/`mobile` está **vazio**; qualquer violação nova reprova. Botão só com ícone e `SelectTrigger` precisam de `aria-label`; Radix Tabs sem `TabsContent` precisa de `aria-controls={undefined}` (ver CONTRIBUTING).
+31. **E2E parcial = `bash scripts/e2e-subset.sh <status> <log> <repeat> <specs…>`** (versionado; antes vivia em `/tmp` e se perdia). Teste novo ⇒ rode com `<repeat>`≥10 e **uma mutação** que o reprove (padrão usado em L14, A9, A10, L16).
+32. **Achado documentado ≠ verdade**: o A2 constava como "Select de mês" e era o Tabs do calendário. Confirme o alvo com o axe (nome do nó) antes de corrigir.

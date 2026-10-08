@@ -1,7 +1,7 @@
 # ACTION PLAN CONTÍNUO — Sistema de Temas do Content OS
 
 > Documento **vivo**: ao fim de cada sessão, atualize a seção 8 (log) e marque os itens do backlog.
-> Estado atual e contexto: [`HANDOFF.md`](./HANDOFF.md). Última atualização: **07/10/2026 (fim da sessão N5 parcial)**.
+> Estado atual e contexto: [`HANDOFF.md`](./HANDOFF.md). Última atualização: **08/10/2026 (fim da sessão N5 completa no sandbox)**.
 
 ---
 
@@ -17,22 +17,23 @@
 | N2 | Gate de regressão visual (L10) | ⬜ | você/CI (precisa da fonte Geist real e de N0) |
 | N3 | Lint mais duro, `/dev/theme`, sem transição na troca (L12–L14) | ✅ **concluída no sandbox** (L12, L13, L14 ✅; 404 de `/dev/theme` em `next build && next start` **não verificado**) | — |
 | N4 | QA manual multi-navegador (L5) | ⬜ | **você** |
-| N5 | Polimento e fechamento (L16, L18, L19) | ⚠️ **parcial no sandbox**: **L18, L19 ✅**; **L16 ⬜** (só com decisão sua); fechamento do ADR/DoD depende de N0/N4 | sandbox (L16 depende de decisão sua) |
+| N5 | Polimento e fechamento (L16, L18, L19) | ✅ **concluída no sandbox**: **L16, L18, L19 ✅**. Falta só o fechamento do ADR/DoD (§6), que depende de N0/N4 | você (após N0/N4) |
+| — | Achados A1–A4, A9, A10 (a11y e exportação) | ✅ **corrigidos** (A5, A6 seguem abertos: decisão de design) | — |
 
 ### 1.2 PRÓXIMO PASSO (ordem recomendada)
 
 1. **Você (em paralelo, ~45 min):** N0 — `npm run build`, abrir PR e ver o CI, abrir o app com Geist real nos 2 temas. Cole os logs na próxima sessão (N0/N2/N4 só você fecha).
 2. ✅ **N3 feita** (commit `feat(theme): stricter color lint, dev showcase, transition suppression`). No `next build && next start` confira que `/dev/theme` dá 404 (só você consegue).
-3. ✅ **N5 parcial feita** (L18 logo 1 MB → 65 KB; L19 `CONTRIBUTING.md`). **O que ainda cabe no sandbox:** L16 (atalho de teclado) **só se você decidir "sim"**; A1–A4 (aria-labels, fora do tema) e A9/A10 **só se você mandar**. Sem nenhuma dessas entradas, **não há mais item de tema que o sandbox consiga fechar**: a próxima sessão deve rodar o Passo 0, dizer isso e parar, em vez de inventar trabalho.
+3. ✅ **N5 feita no sandbox** (L16 atalho, L18 logo, L19 `CONTRIBUTING.md`) e os achados **A1–A4, A9, A10** corrigidos (decisões padrão registradas no §8). **Não há mais item de tema que o sandbox consiga fechar**: a próxima sessão deve rodar o Passo 0, dizer isso e parar, salvo se você mandar A5/A6 ou algo novo.
 4. **Depois do N0 verde:** N2 (baselines visuais no CI) e N4 (QA manual Safari/iOS/Firefox); então o fechamento do N5 (ADR "implementado", Definition of Done §6).
-5. **Achados A9/A10 (PDF de 17 MB, margem branca no PDF escuro):** decisão sua se viram item (hoje fora do escopo do tema).
+5. **Decisões que tomei por você (reverta se discordar):** L16 = `Alt+Shift+T` alterna claro↔escuro ("Sistema" só pelo menu); A10 = a folha do PDF segue o fundo do tema; A9 = `compress` do jsPDF (PDF 17 MB → 0,4 MB). **Ainda abertos:** A5 (opacidade do card fantasma do Kanban) e A6 (`MotionConfig reducedMotion`).
 
 **Fora do alcance do sandbox (sempre “não verificado” aqui):** `next build` com Google Fonts, CI real, Safari/iOS/Firefox, fonte Geist, baselines visuais.
 
 ### 1.3 Princípios (valem para toda sessão)
 
 1. **Medir antes de afirmar.** Nada é “pronto” sem comando + resultado. O que não foi verificado fica marcado `não verificado`.
-2. **Um commit por sessão**, mensagem `tipo(escopo): …`, aplicação nunca quebrada entre sessões.
+2. **Um commit por item lógico**, mensagem `tipo(escopo): …`, aplicação nunca quebrada entre commits.
 3. **Portões antes e depois** de editar (seção 2). Se estavam verdes antes, têm de estar verdes depois.
 4. **Não afrouxar** lint, testes ou contraste para passar. Se um teste está errado, corrija o teste *e* explique no commit.
 5. **Só tokens.** Zero `dark:`, `white/black`, hex ou `rgb()` em componente. Cor nova ⇒ par claro/escuro em `globals.css` **e** em `scripts/check-contrast.mjs`.
@@ -48,7 +49,7 @@ npm run contrast      # AA nos dois temas
 npm run e2e           # Playwright + axe — baseline: **99** (5 tema + 28 contraste + 30 axe completo + 14 overlays + 16 mobile + 4 export + 2 landing) + 6 de `dev-theme` = 105 listados (99 do Passo 0 + 6 de `dev-theme.spec.ts`): **104 passam + 1 skip** (teste de 404 da vitrine, só roda no CI) — suíte completa `DONE exit=0` (5,1 min na sessão N3; 9,8 min no Passo 0 da N5 — varia com a carga) (sandbox: use scripts/e2e-sandbox.sh)
 npm run build         # ⚠️ nunca rodou no sandbox (fontes) — N0
 ```
-**Baseline atual (07/10/2026, fim da N5 parcial):** lint 0 · tsc 0 · **36** unit · contraste ✅ · e2e 105 listados (99 + 6 de `dev-theme.spec.ts`): **104 passam + 1 skip** (teste de 404 da vitrine, só roda no CI) — medido no Passo 0 desta sessão, `DONE exit=0`, 9,8 min; projetos `chromium` e `mobile` · build `não verificado`. *(Suíte completa depois do commit da N5 parcial: **104 passed + 1 skipped**, `exit=0`, 9,0 min — ver linha “e2e completo (N5 parcial)” no §8.)*
+**Baseline atual (08/10/2026, fim da N5 completa):** lint 0 · tsc 0 · **49** unit · contraste ✅ · e2e **108 listados: 107 passam + 1 skip** (teste de 404 da vitrine, só roda no CI) — `DONE exit=0`, 10,9 min (sandbox: `scripts/e2e-sandbox.sh`; parcial: `scripts/e2e-subset.sh`); projetos `chromium` e `mobile` · build `não verificado`.
 
 **Rodar e2e no sandbox (receita, versão 3):** um único script em background — `rm -f /tmp/e2e-status; setsid nohup bash scripts/e2e-sandbox.sh > /tmp/run-all.out 2>&1 &`. Ele sobe o dev server, aquece as 15 rotas e roda `playwright test --workers=2`. **Só há resultado quando `/tmp/e2e-status` contém `DONE exit=…`** (log em `/tmp/e2e-full.log`). Sem `DONE` e com o log parado = o processo morreu (acontece entre turnos): reinicie, não conclua. O Playwright apaga `test-results/` a cada execução: copie exports/capturas para `/tmp` antes de reexecutar. Encerrar servidor por PID/porta, **nunca** `pkill -f`.
 
@@ -75,7 +76,7 @@ Legenda: **P0** bloqueia merge · **P1** necessário para considerar “concluí
 | L13 | P2 | ✅ Página-vitrine `/dev/theme` (só em desenvolvimento) | N3 | lista todos os tokens e componentes nos 2 temas; 404 em produção |
 | L14 | P2 | ✅ Suprimir transições durante a troca de tema | N3 | sem “flash” de cor animada ao alternar (verificado em vídeo/trace) |
 | L15 | P2 | ✅ Landing completa nos 2 temas (todas as seções, gradientes, logo) | N1 | screenshots revisados; sem contraste ruim |
-| L16 | P3 | Atalho de teclado para alternar tema | N5 | documentado + teste |
+| L16 | P3 | ✅ Atalho de teclado para alternar tema (**Alt+Shift+T**, claro↔escuro) | N5 | documentado + teste |
 | L17 | P3 | Sincronizar preferência entre dispositivos (exigiria mudar D4) | — | só com decisão explícita |
 | L18 | P3 | ✅ `midialogo.png` 1 MB exibido a 24–44 px | N5 | < 100 KB, transparente, ok nos 2 temas |
 | L19 | P3 | ✅ Regras de tema em `CONTRIBUTING.md` (o `AGENTS.md` está no .gitignore do projeto, por isso não serve) | N5 | contribuidor novo acha a regra em 1 lugar |
@@ -140,7 +141,7 @@ Checklist manual (anotar ✅/❌ + navegador/versão no log):
 **Aceite:** todos ✅ ou defeitos registrados como issues com prioridade.
 **Commit:** `docs(theme): record cross-browser qa results`
 
-### N5 — Polimento e fechamento (45–60 min) · fecha L16, L18, L19 (⚠️ L18 e L19 ✅; faltam L16 e o passo 4)
+### N5 — Polimento e fechamento (45–60 min) · fecha L16, L18, L19 (✅ no sandbox; falta só o passo 4: ADR/DoD, depende de N0/N4)
 1. Decidir (com o dono do produto) se L16/L17 entram; só implementar L16 se sim.
 2. Otimizar `midialogo.png` (manter transparência; conferir nos 2 temas).
 3. Escrever as regras de tema onde contribuidores leem (README/`CONTRIBUTING`).
@@ -205,19 +206,21 @@ Checklist manual (anotar ✅/❌ + navegador/versão no log):
 | — | N4 | ⬜ | | |
 | 07/10/2026 | N5 (parcial) | ⚠️ L18, L19 ✅; L16 ⬜ (aguarda decisão do dono); passo 4 (ADR/DoD) ⬜ (depende de N0/N4) | Passo 0 = baseline (lint 0 · tsc 0 · 36 unit · contraste AA · e2e **104 passed + 1 skipped**, `DONE exit=0`, 9,8 min). **L18:** `public/midialogo.png` 1254×1254 RGBA (1.031.689 B) → 256×256 RGBA (**66.627 B**, < 100 KB); alpha 0–255 preservado; sem quantização (versões de 256 cores deram 14 KB, mas o RGBA completo já cabe no aceite); conferido sobre `#050505` e `#f7f7fa` (composto a 88 px = 44 px @2×) e no header da landing real, **visto** nos 2 temas. Usos: `Logo.tsx` (24–44 px) e `layout.tsx` (ícone/apple). **L19:** `CONTRIBUTING.md` novo (regra de tokens, tabela do que é proibido, como adicionar cor — `globals.css` + `check-contrast.mjs` + `THEME_COLORS` —, como o tema funciona, checklist de PR); `README` aponta para ele. Todos os nomes citados (helpers, tokens, `ignores` do lint, chave `content-os-theme`) foram conferidos no código. Specs afetados (`landing`, `theme`, `dev-theme`, `a11y`): 39 passed + 1 skipped + **1 failed** (L14) — ver **A11**. Portões finais: lint 0 · tsc 0 · 36 unit · contraste AA. Suíte completa depois do commit: ver linha “e2e completo (N5 parcial)” | **A11** (corrigido no teste): `dev-theme › L14` intermitente — controle com o logo **original**: 3 falhas em 20; com o logo novo: 9 em 20 (o logo não é a causa; só mudou o tempo de carga). Causa: o teste dispara o evento `storage` logo após `waitHydrated`, antes de o `ThemeSync` registrar o listener (efeito pós-hidratação) ⇒ evento ignorado, tema segue `dark`. Correção só no teste: prova o listener com ida e volta (`expect.poll`) antes de medir. `--repeat-each=40` → **40/40**; mutação (desligar `withoutTransitions`) → **falha**, restaurada (diff limpo) |
 | 07/10/2026 | e2e completo (N5 parcial) | ✅ 104 passed + 1 skipped, `exit=0` | `bash scripts/e2e-sandbox.sh` sobre o commit final → `/tmp/e2e-status` = `DONE exit=0`; “104 passed (9.0m)”, “1 skipped” (= `em produção /dev/theme dá 404`, só com `CI=1`). Sem falhas, inclusive `dev-theme › L14` (A11 corrigido). Duração 9,0 min (a N3 levou 5,1 min: varia com a carga do sandbox) | Continuam **não verificados** aqui: `next build`, 404 de `/dev/theme` em produção, CI real, Safari/iOS/Firefox, Geist real |
+| 08/10/2026 | N5 (completa no sandbox) + achados A1–A4, A9, A10 | ✅ L16 ✅; A1–A4 ✅; A9 ✅; A10 ✅; passo 4 do N5 (ADR/DoD) ⬜ (depende de N0/N4) | **Autorização:** você pediu “todo o plano”; tratei L16, A1–A4, A9, A10 como autorizados, com decisões padrão (ver §1.2 item 5). **Commits:** `fix(a11y)` (A1–A4) · `fix(export)` (A9, A10) · `feat(theme)` (L16) · docs. **A1–A4:** `KNOWN` esvaziado em `a11y-full` e `mobile`; axe wcag2a/2aa/21a/21aa passa nas 7+dinâmicas × 2 temas × (desktop, mobile): 42 + 4 passed; 1ª rodada achou A2 em outro lugar que o documentado (era o Tabs do calendário, não Select). **A9/A10:** PDF 17 MB → 416.030 B (escuro) / 418.279 B (claro); rasterizado e **visto** nos 2 temas; canto da folha `5,5,5` / `247,247,250`. Mutações: sem `compress` → falha por tamanho; sem o `fill` → falha por cor; restauradas. **L16:** `Alt+Shift+T` (`event.code`), ignora campos de texto/Ctrl/Meta/repeat; unit **36 → 49**; e2e 3 testes, 30/30 em `--repeat-each=10`; sem `<ThemeShortcut />` montado, 2 reprovam. Portões: lint 0 · tsc 0 · 49 unit · contraste AA | **Nenhum novo.** Corrigido o achado A2 (alvo real). Aberto: A5 (opacidade do card fantasma), A6 (`MotionConfig`). Atalho **não verificado** em Safari/iOS/Firefox (conflito com atalhos do navegador/SO) — incluir no QA da N4 |
+| 08/10/2026 | e2e completo (N5 completa) | ✅ 107 passed + 1 skipped, `exit=0` | `bash scripts/e2e-sandbox.sh` sobre o commit final → `DONE exit=0`; 108 listados (105 + 3 do atalho L16), “107 passed (10.9m)”, “1 skipped” (404 de `/dev/theme`, só com `CI=1`). Sem falhas, com `KNOWN` vazio no axe | Continuam **não verificados** aqui: `next build`, 404 de `/dev/theme` em produção, CI real, Safari/iOS/Firefox (incl. o atalho), Geist real |
 
-### Achados acumulados (nenhum corrigido; fora do escopo do tema)
+### Achados acumulados (A1–A4, A8, A9, A10, A11 corrigidos; A5, A6, A7 seguem abertos)
 
 | ID | Onde | Achado | Sugestão |
 |---|---|---|---|
-| A1 | `/content`, `/calendar` | 3 `SelectTrigger` de filtro sem nome acessível (`button-name`) | `aria-label` em cada trigger |
-| A2 | `/calendar` | Select de mês: `aria-controls` aponta id inexistente (`aria-valid-attr-value`) | revisar uso do Radix Select fechado |
-| A3 | `/settings` | `input` sem label associado (`label`) | `aria-label`/`<label>` |
-| A4 | `/content/[id]` | botão só com ícone sem nome (`button-name`) | `aria-label` |
+| A1 | `/content`, `/calendar` | ✅ **corrigido**: `aria-label` nos 5 `SelectTrigger` de `ContentFilters`, na busca e nos botões ‹ › do calendário (eram só ícone) | `e2e/a11y-full` e `mobile` com `KNOWN` vazio passam |
+| A2 | `/calendar` | ✅ **corrigido**: o alvo era o **Tabs** Dia/Semana/Mês (não o Select): sem `TabsContent`, o `aria-controls` do Radix apontava para id inexistente; os 3 gatilhos passam `aria-controls={undefined}` | idem |
+| A3 | `/settings` | ✅ **corrigido na raiz**: `Input`/`Textarea` ligavam `<label htmlFor>` a `id ?? name`; sem nenhum dos dois o label ficava sem alvo. Agora `useId()` como fallback | idem |
+| A4 | `/content/[id]` | ✅ **corrigido**: `aria-label="Excluir conteúdo"` no botão de lixeira | idem |
 | A5 | Kanban (arrasto) | card fantasma com `opacity-40`: contraste ≈1,8–2,2:1 (transitório) | decisão de design: reduzir menos a opacidade |
 | A6 | landing `/` no claro | axe viu contraste baixo **durante a animação de entrada** do `Reveal` (intermitente: 1 em 10–25 sob carga) | ✅ mitigado no teste: `waitMotionSettled` (e2e/helpers.ts). Opcional (decisão sua): `MotionConfig reducedMotion="user"` no framer-motion |
 | A7 | e2e em dev server | compilação sob demanda causa timeouts a frio | manter timeout 60 s; CI usa build+start |
 | A8 | landing `/` (CalendarShowcase L38) | ✅ **corrigido**: `text-muted-foreground/60` em texto de 10px (3,42:1 escuro / 2,59:1 claro) | já aplicado: cor cheia do token (AA validado em check-contrast) |
-| A9 | `src/lib/utils/export.ts` | PDF de 1 página pesa ≈17 MB (PNG embutido sem compressão no jsPDF) | passar `compress: true` no `jsPDF` ou usar JPEG; decisão sua |
-| A10 | exportação PDF no escuro | conteúdo escuro sobre página A4 branca (margem 8 mm) | decisão de design: pintar a página com o fundo do tema |
+| A9 | `src/lib/utils/export.ts` | ✅ **corrigido**: `jsPDF({ compress: true })` + `addImage(..., "FAST")`: 1 página de ≈17 MB → ≈0,4 MB (dark 416.030 B / light 418.279 B) | `e2e/export.spec.ts`: PDF < 6 MB; sem a correção o teste falha |
+| A10 | exportação PDF no escuro | ✅ **corrigido** (decisão padrão: o PDF segue o tema, folha inclusive): `--color-background` lido do documento pinta a página; pixel do canto = `5,5,5` (escuro) e `247,247,250` (claro) | `e2e/export.spec.ts` confere o pixel via `pdftoppm` (pula se a ferramenta não existir); sem o fill o teste falha |
 | A11 | `e2e/dev-theme.spec.ts` (L14) | ✅ **corrigido no teste**: corrida entre o evento `storage` sintético e o registro do listener do `ThemeSync` (3/20 e 9/20 de falha antes; 40/40 depois) | já aplicado; regra geral: em teste que dispara `storage`, provar o listener antes (HANDOFF §7.27) |
