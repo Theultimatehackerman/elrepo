@@ -11,10 +11,10 @@
 | | |
 |---|---|
 | **Objetivo** | Escuro (antes fixo) como tema de primeira classe: **Escuro · Claro · Sistema**, troca em tempo real, persistência, zero flash, WCAG AA. |
-| **Estado** | Implementação completa (S0–S9) + **N0 parcial** (pins) + **N1 concluída** + **N3 concluída no sandbox** (lint de cor mais duro, vitrine `/dev/theme`, troca sem transições). Falta: validação no ambiente real (N0/N4), N2 e N5. |
+| **Estado** | Implementação completa (S0–S9) + **N0 parcial** (pins) + **N1 concluída** + **N3 concluída no sandbox** + **N5 parcial** (L18 logo leve, L19 `CONTRIBUTING.md`). Falta: validação no ambiente real (N0/N4), N2, L16 (decisão sua) e o fechamento do N5 (ADR/DoD). |
 | **Pronto para merge?** | **Ainda não.** Abertos: **B1** `next build` e **B2** CI (nunca executados; só rodam na sua máquina). B3/B4 resolvidos. |
-| **Baseline (portões)** | lint **0** · tsc **0** · **36** unit · contraste AA (2 temas) · e2e 105 listados (99 do Passo 0 + 6 de `dev-theme.spec.ts`): **104 passam + 1 skip** (teste de 404 da vitrine, só roda no CI) — suíte completa `DONE exit=0`, 5,1 min (ver ACTION-PLAN §2) · build `não verificado` |
-| **Histórico git** | 6 commits: `base` (original) → `feat(theme)…` → `chore(theme): pin…` → `test(theme): …N1 partial` → `test(theme): stabilize axe-full…` → `test(theme): cover mobile, export, landing…` → `feat(theme): stricter color lint, dev showcase, transition suppression` (7 commits). (O hash original `ebf4d7f` não existe aqui; a base foi reconstruída do zip original e o diff é equivalente.) |
+| **Baseline (portões)** | lint **0** · tsc **0** · **36** unit · contraste AA (2 temas) · e2e 105 listados (99 do Passo 0 + 6 de `dev-theme.spec.ts`): **104 passam + 1 skip** (teste de 404 da vitrine, só roda no CI) — suíte completa `DONE exit=0`, 9,0 min após a N5 parcial (ver ACTION-PLAN §2) · build `não verificado` |
+| **Histórico git** | 8 commits: `base` (original) → `feat(theme)…` → `chore(theme): pin…` → `test(theme): …N1 partial` → `test(theme): stabilize axe-full…` → `test(theme): cover mobile, export, landing…` → `feat(theme): stricter color lint, dev showcase, transition suppression` → `chore(theme): optimize logo, add CONTRIBUTING…` (N5 parcial). (O hash original `ebf4d7f` não existe aqui; a base foi reconstruída do zip original e o diff é equivalente.) |
 | **Próximo passo** | Ver **ACTION-PLAN §1 (painel)**. |
 
 > **Nota de processo (lição desta sessão):** o upload anterior veio com o zip *errado* (o original, sem docs/patch/histórico) e a sessão perdeu tempo. Agora tudo vive em **um único** `CONTENT-OS-SESSION-PACK.zip` com `verify-pack.sh`; o Passo 0 do prompt **para** se a verificação falhar.
@@ -83,15 +83,24 @@
 | Suíte completa | 104 passed + 1 skipped, `exit=0`; a 1ª execução teve 1 falha intermitente (A6) corrigida **no teste** com `waitMotionSettled` (40/40 em `--repeat-each=40`) |
 | L14 sem transição na troca | `theme-store.ts` (`withoutTransitions`); unit 2/2; e2e L14 passa e **falha sem a correção** |
 
+### Sessão N5 parcial — 07/10/2026
+
+| Entrega | Evidência |
+|---|---|
+| L18 `midialogo.png` | 1.031.689 B → **66.627 B** (256×256 RGBA, alpha preservado); visto sobre `#050505`/`#f7f7fa` e no header da landing real |
+| L19 `CONTRIBUTING.md` | lugar único das regras de tema; README aponta para ele (o `AGENTS.md` é ignorado pelo git) |
+| A11 (teste L14 intermitente) | corrida do evento `storage` × listener do `ThemeSync`; corrigido **no teste**; 40/40 em `--repeat-each=40`; mutação ainda reprova |
+| e2e | Passo 0: 104 passed + 1 skipped (9,8 min). Suíte completa depois do commit: **104 passed + 1 skipped, `exit=0`, 9,0 min** (ACTION-PLAN §8) |
+
 ## 3. O que NÃO foi feito (resumo — detalhe e IDs em ACTION-PLAN §3)
 
 | Item | Por quê | Onde |
 |---|---|---|
 | `next build` (L1), CI real (L2), Safari/iOS/Firefox (L5), fonte Geist real | sandbox sem Google Fonts/CI/outros navegadores | você: N0/N4 |
 | Gate visual (L10) | baselines exigem a fonte real, geradas no CI Linux | N2 (exige N0) |
-| Regras de tema em README/CONTRIBUTING (L19); otimizar `midialogo.png` (L18) | não feito | **N5 parcial (próximo)** |
+| Atalho de teclado (L16) | exige decisão do dono | você decide; só então o sandbox implementa |
 | 404 de `/dev/theme` em `next build && next start` | só o guard foi testado (unit) | você: N0 |
-| Decisão do dono: atalho de teclado (L16), sync entre dispositivos (L17) | exige decisão | N5 |
+| Decisão do dono: sync entre dispositivos (L17) | exige decisão | N5 |
 | A9 (PDF 17 MB) e A10 (margem branca no PDF escuro) | fora do escopo do tema; decisão sua | ACTION-PLAN §8 |
 
 
@@ -136,14 +145,14 @@ Regra de uso: **nunca** `dark:`, `white`, `black` nem hex em componente — o ES
 | R8 | hex em TSX → paleta movida para `src/lib/constants/avatar-colors.ts`; Avatar sem `color` usa `bg-primary` |
 
 ### Arquivos novos / relevantes
-`src/lib/theme/{constants,resolve,init-script,theme-store}.ts` (+ `*.test.ts`) · `src/hooks/use-theme.ts` · `src/components/layout/{ThemeSync,ThemeToggle}.tsx` · `src/lib/utils/color.ts` (+ teste) · `src/lib/constants/avatar-colors.ts` · `scripts/check-contrast.mjs` · `vitest.config.ts` · `playwright.config.ts` · `e2e/{theme,a11y,a11y-full,overlays,mobile,export,landing}.spec.ts` + `e2e/helpers.ts` · `scripts/e2e-sandbox.sh` · `scripts/lint-fixtures/*` · `src/app/dev/theme/page.tsx` · `src/components/dev/ThemeShowcase.tsx` · `src/lib/theme/dev-showcase.ts` · `e2e/dev-theme.spec.ts` · `.github/workflows/ci.yml` · `docs/*`. (`theme-system.patch` acompanha o zip, fora da árvore git.)
+`src/lib/theme/{constants,resolve,init-script,theme-store}.ts` (+ `*.test.ts`) · `src/hooks/use-theme.ts` · `src/components/layout/{ThemeSync,ThemeToggle}.tsx` · `src/lib/utils/color.ts` (+ teste) · `src/lib/constants/avatar-colors.ts` · `scripts/check-contrast.mjs` · `vitest.config.ts` · `playwright.config.ts` · `e2e/{theme,a11y,a11y-full,overlays,mobile,export,landing}.spec.ts` + `e2e/helpers.ts` · `scripts/e2e-sandbox.sh` · `scripts/lint-fixtures/*` · `src/app/dev/theme/page.tsx` · `src/components/dev/ThemeShowcase.tsx` · `src/lib/theme/dev-showcase.ts` · `e2e/dev-theme.spec.ts` · `.github/workflows/ci.yml` · `CONTRIBUTING.md` · `docs/*`. (`theme-system.patch` acompanha o zip, fora da árvore git.)
 
 ---
 
 ## 6. Como retomar (5 minutos)
 
 ```bash
-unzip CONTENT-OS-SESSION-PACK.zip && cd CONTENT-OS-SESSION-PACK
+mkdir pack && cd pack && unzip -q ../CONTENT-OS-SESSION-PACK.zip   # o zip extrai direto na raiz (sem pasta-mãe)
 bash verify-pack.sh                    # tem de terminar com "PACK OK"
 cd project/Content-OS-main             # já é um repo git com o histórico
 nvm use 22                             # ou Node >= 22.12
@@ -246,3 +255,5 @@ Antes de encerrar: confirme que cada critério de aceite da sessão foi checado 
 24. **`e2e/dev-theme.spec.ts` depende de `process.env.CI`**: CI roda `build + start` (produção) ⇒ vitrine 404; local (`next dev`) ⇒ vitrine existe. Não mexer sem ver `playwright.config.ts`.
 25. **Testes de `theme-store`** deixam `<style id=theme-no-transition>` pendente (timer real de 50 ms): `beforeEach` limpa todas as tags.
 26. **PDFs claro e escuro têm exatamente o mesmo tamanho** (jsPDF grava pixels sem compressão): não é bug de tema; confirme com `cmp`/`md5sum`.
+27. **Teste que dispara `StorageEvent` sintético** (L14, A11): o `ThemeSync` só registra o listener num efeito *depois* de hidratar; `waitHydrated` não garante isso e o evento é ignorado em silêncio (falhou 3/20 e 9/20). Antes de medir, prove o listener com ida e volta via `expect.poll` (ver `e2e/dev-theme.spec.ts`).
+28. **Orçamento de sessão**: a N5 parcial fechou a tarefa e *não* fechou o pack porque a investigação de uma flakiness fora do escopo (controle, repetições, mutação, capturas) consumiu o tempo. Use `bash build-pack.sh` (raiz do pack) logo após o commit; investigue no máximo 1 controle + 1 correção por falha alheia.

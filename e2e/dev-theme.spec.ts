@@ -50,6 +50,17 @@ for (const theme of THEMES) {
 
 test("troca de tema suprime transições por um instante e depois as restaura (L14)", async ({ page }) => {
   await open(page, "dark");
+  // `ThemeSync` só registra o listener de `storage` num efeito DEPOIS de hidratar (HANDOFF §7.7); disparar o evento
+  // cedo demais é ignorado e o teste ficava intermitente. Prova que o listener está ativo (ida e volta) antes de medir.
+  const emit = (value: string) =>
+    page.evaluate((v) => {
+      localStorage.setItem("content-os-theme", v);
+      window.dispatchEvent(new StorageEvent("storage", { key: "content-os-theme" }));
+      return document.documentElement.getAttribute("data-theme");
+    }, value);
+  await expect.poll(() => emit("light")).toBe("light");
+  await expect.poll(() => emit("dark")).toBe("dark");
+  await expect(page.locator("#theme-no-transition")).toHaveCount(0); // a supressão da ida e volta já terminou
   const probe = await page.evaluate(async () => {
     const button = document.querySelector("main button:not([disabled])") as HTMLElement;
     const before = getComputedStyle(button).transitionProperty;
