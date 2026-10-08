@@ -52,3 +52,40 @@ test("Settings → Preferências altera o tema", async ({ page }) => {
   await page.getByRole("option", { name: "Claro" }).click();
   expect(await themeOf(page)).toBe("light");
 });
+
+// L16: atalho Alt+Shift+T. O listener só existe depois de hidratar (mesma corrida do A11), então a tecla é repetida
+// até a troca ocorrer: cada tecla é tratada na hora ou nunca, logo não há risco de dupla troca.
+async function pressShortcutUntil(page: Page, expected: "light" | "dark") {
+  for (let i = 0; i < 30; i++) {
+    await page.keyboard.press("Alt+Shift+T");
+    if ((await themeOf(page)) === expected) return;
+    await page.waitForTimeout(150);
+  }
+  throw new Error(`Alt+Shift+T não levou ao tema ${expected}`);
+}
+
+test("atalho Alt+Shift+T alterna escuro↔claro e persiste (L16)", async ({ page }) => {
+  await page.goto("/");
+  await pressShortcutUntil(page, "light");
+  expect(await page.evaluate((k) => localStorage.getItem(k), KEY)).toBe("light");
+  await page.keyboard.press("Alt+Shift+T");
+  expect(await themeOf(page)).toBe("dark");
+  await pressShortcutUntil(page, "light");
+  await page.reload();
+  expect(await themeOf(page)).toBe("light");
+});
+
+test("atalho não age enquanto se digita num campo (L16)", async ({ page }) => {
+  await page.goto("/login");
+  await pressShortcutUntil(page, "light"); // prova que o listener está ativo
+  await page.keyboard.press("Alt+Shift+T");
+  expect(await themeOf(page)).toBe("dark");
+  await page.locator("input").first().focus();
+  await page.keyboard.press("Alt+Shift+T");
+  expect(await themeOf(page)).toBe("dark");
+});
+
+test("ThemeToggle anuncia o atalho (aria-keyshortcuts) (L16)", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByLabel("Alterar tema")).toHaveAttribute("aria-keyshortcuts", "Alt+Shift+T");
+});

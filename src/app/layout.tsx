@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ToastProvider } from "@/components/ui/Toast";
+import { ThemeShortcut } from "@/components/layout/ThemeShortcut";
 import { ThemeSync } from "@/components/layout/ThemeSync";
 import { themeInitScript } from "@/lib/theme/init-script";
 import "./globals.css";
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ThemeSync />
+        <ThemeShortcut />
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/Dropdown";
 import { useTheme } from "@/hooks/use-theme";
 import { isThemePreference } from "@/lib/theme/resolve";
+import { THEME_SHORTCUT_ARIA } from "@/lib/theme/shortcut";
 
 const OPTIONS = [
   { value: "light", label: "Claro", icon: Sun },
@@ -26,7 +27,7 @@ export function ThemeToggle() {
   return (
     <Dropdown>
       <DropdownTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Alterar tema">
+        <Button variant="ghost" size="icon" aria-label="Alterar tema" aria-keyshortcuts={THEME_SHORTCUT_ARIA}>
           <TriggerIcon className="size-4" />
         </Button>
       </DropdownTrigger>
