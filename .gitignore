@@ -50,3 +50,7 @@ PUBLICACAO_ASSISTIDA.md
 # testes
 /test-results/
 /playwright-report/
+
+# n0 artifacts
+.n0-tmp/
+n0-report.txt
