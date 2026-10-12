@@ -2,6 +2,7 @@ name: CI
 on:
   push: { branches: [main, master, n0-build-e-ci] }
   pull_request:
+  workflow_dispatch:
 jobs:
   quality:
     runs-on: ubuntu-latest
@@ -28,3 +29,28 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: failure()
         with: { name: playwright-report, path: playwright-report/ }
+  # L10: gate visual. Só roda de verdade depois que as baselines (workflow "Visual baselines") forem commitadas.
+  # `hashFiles()` NÃO é permitido em `if:` de job (o GitHub rejeita o arquivo inteiro); por isso a checagem é um passo.
+  visual:
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+      - id: baselines
+        run: |
+          n=$(find e2e/visual.spec.ts-snapshots -name '*.png' 2>/dev/null | wc -l)
+          echo "png=$n"
+          if [ "$n" -gt 0 ]; then echo "present=true" >> "$GITHUB_OUTPUT"; else echo "present=false" >> "$GITHUB_OUTPUT"; echo "Sem baselines: gate visual pulado."; fi
+      - uses: actions/setup-node@v4
+        if: steps.baselines.outputs.present == 'true'
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+        if: steps.baselines.outputs.present == 'true'
+      - run: npx playwright install --with-deps chromium
+        if: steps.baselines.outputs.present == 'true'
+      - run: npx playwright test --project=visual
+        if: steps.baselines.outputs.present == 'true'
+        env: { CI: "true", VISUAL: "1" }
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: visual-diff, path: test-results/ }
